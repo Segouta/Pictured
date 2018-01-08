@@ -26,6 +26,7 @@ MVP:
 * Players can take photo's with an in-app camera.
 * The photo is checked using Google's Vision API, and only if it is indeed the stated object, points are rewarded
 * A highscore of every object is available.
+* Players can view their past snapped items.
 
 Optional:
 
@@ -33,6 +34,10 @@ Optional:
 * Anti-cheat. The moment an object is revealed, the phone retrieves a timestamp, but not from the phone itself, because that can be adjusted by the user. Rather from an API. When the object is photographed, that API is called again, and the times are compared.
 * Players can poule up. This way, people get the same objects to photograph, and therefore compete in a more honest way.
 * A quickest find is available per player, if that player is friended with you you can see it.
+
+Superoptional:
+
+* People can see in an instagram-like feed what all his or her friends are finding and getting points for.
 
 ## *Prerequisites*
 
