@@ -1,20 +1,24 @@
-# Project Proposal
+# Project Proposal SNAPTHAT
 
 This app is written by Christian in the context of the minor programming at the UvA, january of 2018.
 
-## *The "problem"
+## *The "problem"*
 
 People nowadays spend hours and hours behind different kinds of screens.
 Pictured takes advantage of the technology that phones provide, and makes users go outside and explore the world a bit with a simple yet fun game.
 
-## *The solution
+## *The solution*
 
-### *One line description
+### *One line description*
 The whole app is built around the principle of providing the user with a random (but restricted to certain areas) noun, and after the user has photographed that object in real life, the player gets points for time and distance traveled.
 
 Some more information: To do so, the user might have to travel a bit, and that takes time. The more time, the "worse" that user performed. Players can share, compare and group their results. Friends can challenge each other to outtime the other.
 
-### *Features
+### *Visual sketch*
+
+![plaatje](https://github.com/Segouta/Pictured/blob/master/doc/visual_sketch.jpeg)
+
+### *Features*
 
 MVP:
 
@@ -30,7 +34,7 @@ Optional:
 * Players can poule up. This way, people get the same objects to photograph, and therefore compete in a more honest way.
 * A quickest find is available per player, if that player is friended with you you can see it.
 
-## *Prerequisites
+## *Prerequisites*
 
 Data sources:
 
