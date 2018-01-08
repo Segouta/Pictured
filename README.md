@@ -16,7 +16,7 @@ Some more information: To do so, the user might have to travel a bit, and that t
 
 ### *Visual sketch*
 
-![visual sketch](https://github.com/Segouta/Pictured/blob/master/doc/visual_sketch.jpeg)
+![visual sketch](https://github.com/Segouta/Pictured/blob/master/doc/visual_sketch.jpg)
 
 ### *Features*
 
