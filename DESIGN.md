@@ -58,8 +58,8 @@ This file elaborates on the design of the SnapThat-app.
     * Shows a spinner during waiting time for Vision to check.
     
     **Methods:**
-    checkCorrectness(): Uses Google Vision API to check if a photographed item is indeed what was asked.
-    goToRewardActivity(): goes to the reward activity.
+    * checkCorrectness(): Uses Google Vision API to check if a photographed item is indeed what was asked.
+    * goToRewardActivity(): goes to the reward activity.
 
 5. Point rewarding activity
     * Being able to challenge friends to try the same object in a better time then yours.
