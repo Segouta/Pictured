@@ -10,11 +10,19 @@ This file elaborates on the design of the SnapThat-app.
 
 ![visual sketch](https://github.com/Segouta/Pictured/blob/master/doc/visual_sketch.jpg)
 
+### *Additional conceptual images*
+
+![login screen](https://github.com/Segouta/Pictured/blob/master/doc/login.png)
+![main activity](https://github.com/Segouta/Pictured/blob/master/doc/main.png)
+
 ### *Explanation*
 
 1. Login activity
     * Users can login or sign in.
     * Uses firebase to manage users.
+    
+    _Methods:_
+    * 
 
 2. Main activity
     * Users can scroll through recent finds using a horizontal scrollable listview with adapter that manages the layout of each "tile".
