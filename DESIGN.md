@@ -1,3 +1,5 @@
+# SnapThat
+
 ![visual sketch](https://github.com/Segouta/Pictured/blob/master/doc/SnapThat.png)
 
 # DESIGN
