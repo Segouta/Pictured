@@ -18,10 +18,11 @@ This file elaborates on the design of the SnapThat-app.
 ### *Explanation*
 
 #### **1. Login activity**
+    Description:
     * Users can login or sign in.
     * Uses firebase to manage users.
     
-    *Methods:*
+    Methods:
     * createAccount(): Creates a user account in firebase. After that, the user is redirected to the next activity.
     * logIn(): Logs a user in, does all the checks for that etc.
     * goToMainActivity(): Redirects to main activity.
@@ -30,10 +31,11 @@ This file elaborates on the design of the SnapThat-app.
     * doesUsernameExist(): Checks if the filled in Username is already in use or not.
 
 #### **2. Main activity**
+    Description:
     * Users can scroll through recent finds using a horizontal scrollable listview with adapter that manages the layout of each "tile".
     * Users can click on the large "FIND" button, then a random object's name is shown.
 
-    *Methods:*
+    Methods:
     * GPS methods such as onLocationChanged(), onStatusChanged(), onProviderEnabled(), onProviderDisabled().
     * getUsername(): Retrieves username from database to display welcome message.
     * getLocation(): Gets current gps location.
@@ -44,35 +46,39 @@ This file elaborates on the design of the SnapThat-app.
     * safeTimeAndLocationStart(): When the user clicks on start, the time and location are saved of that moment.
       
 #### **3. Camera activity**
+    Description:
     * Shows the name of a random object the user has to find. Does this via a html request that is stripped to the wanted part.
     * Shows a very basic camera screen, uses android's camera API.
     * Once a picture is taken, on to the next activity.
     
-    *Methods:*
+    Methods:
     * safeImage(): Saves taken image to firebase.
     * goToCheckActivity(): Goes to the next activity.
     * safeTimeAndLocationEnd(): When the user clicks on the photo button, the time and location are saved of that moment.
 
 #### **4. Checking activity**
+    Description:
     * Check if the picture is graded as valid for the requested object using Google Vision API.
     * Shows a spinner during waiting time for Vision to check.
     
-    *Methods:*
+    Methods:
     * checkCorrectness(): Uses Google Vision API to check if a photographed item is indeed what was asked.
     * goToRewardActivity(): goes to the reward activity.
 
 #### **5. Point rewarding activity**
+    Description:
     * Being able to challenge friends to try the same object in a better time then yours.
     * Uses firebase to search other friends.
     
-    *Methods:*
+    Methods:
     * rewardPoints(): Calculates how much points a user has earned based on the time spend to find the object and distance travelled to find it.
     * goToMainAcitvity(): Goes back to the main activity.
     
 #### **6. Summary activity**
+    Description:
     * Summarizes recent found of the user.
     
-    *Methods:*
+    Methods:
     * getObjectInfo(): retrieves object info of that user such as when was it found, what was the amount of points that were given, what was the time and distance etc.
    
    
