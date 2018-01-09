@@ -12,8 +12,8 @@ This file elaborates on the design of the SnapThat-app.
 
 ### *Additional conceptual images*
 
-![login screen](https://github.com/Segouta/Pictured/blob/master/doc/login.png)
-![main activity](https://github.com/Segouta/Pictured/blob/master/doc/main.png)
+![login screen](https://github.com/Segouta/Pictured/blob/master/doc/login.PNG)
+![main activity](https://github.com/Segouta/Pictured/blob/master/doc/main.PNG)
 
 ### *Explanation*
 
