@@ -27,12 +27,14 @@ This file elaborates on the design of the SnapThat-app.
     * logIn(): Logs a user in, does all the checks for that etc.
     * goToMainActivity(): Redirects to main activity.
     * onStart() and onStop(): Will contain code that checks if already logged in.
-    * addUserToDB(): Adds the user to the database, creates a place where his/her data is stored such as friends, accomplishments etc.
+    * addUserToDB(): Adds the user to the database, creates a place where his/her data is stored such as friends, 
+      accomplishments etc.
     * doesUsernameExist(): Checks if the filled in Username is already in use or not.
 
 #### **2. Main activity**
     Description:
-    * Users can scroll through recent finds using a horizontal scrollable listview with adapter that manages the layout of each "tile".
+    * Users can scroll through recent finds using a horizontal scrollable listview with adapter that manages the
+      layout of each "tile".
     * Users can click on the large "FIND" button, then a random object's name is shown.
 
     Methods:
@@ -47,14 +49,16 @@ This file elaborates on the design of the SnapThat-app.
       
 #### **3. Camera activity**
     Description:
-    * Shows the name of a random object the user has to find. Does this via a html request that is stripped to the wanted part.
+    * Shows the name of a random object the user has to find. Does this via a html request that is stripped to
+      the wanted part.
     * Shows a very basic camera screen, uses android's camera API.
     * Once a picture is taken, on to the next activity.
     
     Methods:
     * safeImage(): Saves taken image to firebase.
     * goToCheckActivity(): Goes to the next activity.
-    * safeTimeAndLocationEnd(): When the user clicks on the photo button, the time and location are saved of that moment.
+    * safeTimeAndLocationEnd(): When the user clicks on the photo button, the time and location are saved of that
+      moment.
 
 #### **4. Checking activity**
     Description:
@@ -71,7 +75,8 @@ This file elaborates on the design of the SnapThat-app.
     * Uses firebase to search other friends.
     
     Methods:
-    * rewardPoints(): Calculates how much points a user has earned based on the time spend to find the object and distance travelled to find it.
+    * rewardPoints(): Calculates how much points a user has earned based on the time spend to find the object and
+      distance travelled to find it.
     * goToMainAcitvity(): Goes back to the main activity.
     
 #### **6. Summary activity**
@@ -79,7 +84,8 @@ This file elaborates on the design of the SnapThat-app.
     * Summarizes recent found of the user.
     
     Methods:
-    * getObjectInfo(): retrieves object info of that user such as when was it found, what was the amount of points that were given, what was the time and distance etc.
+    * getObjectInfo(): retrieves object info of that user such as when was it found, what was the amount of points
+      that were given, what was the time and distance etc.
    
    
 ### *API'S AND LIBRARIES*
