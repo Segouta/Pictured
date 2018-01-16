@@ -28,7 +28,7 @@ Begin Firebase-login.
 
 Firebase-login met Google accounts afgemaakt.
 
-Google login gefixt, plus uitloggen vanuit mainscreen
+Google login gefixt, plus uitloggen vanuit mainscreen.
 
 ### Maandag 15-01-18
 

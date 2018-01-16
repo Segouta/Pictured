@@ -221,8 +221,6 @@ public class LoginActivity extends BaseActivity implements
 
     public void addUserToDb() {
 
-        toaster("hier???");
-
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         ValueEventListener postListener = new ValueEventListener() {
