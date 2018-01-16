@@ -1,6 +1,7 @@
 package com.example.christian.pictured;
 
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,9 +35,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.microsoft.projectoxford.vision.VisionServiceClient;
+import com.microsoft.projectoxford.vision.VisionServiceRestClient;
+import com.microsoft.projectoxford.vision.contract.AnalysisResult;
+import com.microsoft.projectoxford.vision.contract.Caption;
+import com.microsoft.projectoxford.vision.rest.VisionServiceException;
 
 import org.w3c.dom.Text;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 
@@ -49,7 +58,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-//    public VisionServiceClient visionServiceClient = new VisionServiceRestClient("364da92137ce4d0d99397ae2b2c5a29b");
+    public VisionServiceClient visionServiceClient = new VisionServiceRestClient("364da92137ce4d0d99397ae2b2c5a29b", "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0");
 
 
 
@@ -58,19 +67,23 @@ public class MainActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
 
-    File storageDir;
-    String imageFileName;
     DatabaseReference mDatabase;
     ImageView myImage;
+    File imgFile;
 
+    String imageFileName;
+    File storageDir;
 
     private FirebaseAuth.AuthStateListener mAuthListener;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        imageFileName = "SnapThatCurrent.jpg";
+        storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        imgFile = new  File(storageDir + "/" + imageFileName);
+
         Button processButton = findViewById(R.id.processButton);
-        TextView descText = findViewById(R.id.descText);
 
         usernameText = findViewById(R.id.usernameText);
         myImage = (ImageView) findViewById(R.id.thumbnail);
@@ -80,6 +93,64 @@ public class MainActivity extends AppCompatActivity {
         setThumbnail();
         getThing();
 
+//        Bitmap mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fiets);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        mBitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
+
+        processButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AsyncTask<InputStream, String, String> visionTask = new AsyncTask<InputStream, String, String>() {
+
+                    ProgressDialog mDialog = new ProgressDialog(MainActivity.this);
+
+                    @Override
+                    protected String doInBackground(InputStream... params) {
+                        try {
+                            publishProgress("Processing dat Snap...");
+                            String[] features = {"Description"};
+                            String[] detailes = {};
+
+                            AnalysisResult result = visionServiceClient.analyzeImage(params[0],features,detailes);
+
+                            String strResult = new Gson().toJson(result);
+                            return strResult;
+
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    }
+
+                    @Override
+                    protected void onPreExecute() {
+                        mDialog.show();
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        mDialog.dismiss();
+
+                        AnalysisResult result = new Gson().fromJson(s, AnalysisResult.class);
+                        TextView descText = findViewById(R.id.descText);
+                        StringBuilder stringBuilder = new StringBuilder();
+                        for(Caption caption:result.description.captions) {
+                            stringBuilder.append(caption.text);
+                        }
+                        descText.setText(stringBuilder);
+                    }
+
+                    @Override
+                    protected void onProgressUpdate(String... values) {
+                        mDialog.setMessage(values[0]);
+                    }
+                };
+
+                visionTask.execute(inputStream);
+            }
+        });
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -153,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setThumbnail() {
-        File imgFile = new  File(storageDir + "/" + imageFileName);
+
         if(imgFile.exists()){
 
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
@@ -198,8 +269,7 @@ public class MainActivity extends AppCompatActivity {
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        imageFileName = "SnapThatCurrent.jpg";
-        storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
         File image = new File(storageDir, imageFileName);
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
@@ -225,11 +295,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 String thing = objects.get(2);
                 thingText.setText(thing);
-
-//                GenericTypeIndicator<ArrayList<ClipData.Item>> t = new GenericTypeIndicator<ArrayList<ClipData.Item>>() {};
-//                ArrayList<ClipData.Item> yourStringArray = dataSnapshot.getValue(t);
-//
-//                thingText.setText(yourStringArray.toString());
 
 
             }
