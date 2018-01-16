@@ -133,11 +133,9 @@ public class MainActivity extends AppCompatActivity {
 
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-
-
             myImage.setImageBitmap(myBitmap);
 
-        };
+        }
     }
 
     public void photo(View view) {
@@ -171,27 +169,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            myImage.setImageBitmap(imageBitmap);
-        }
-    }
-
     String mCurrentPhotoPath;
 
     private File createImageFile() throws IOException {
         // Create an image file name
-        String imageFileName = "SnapThatCurrent";
+        String imageFileName = "SnapThatCurrent.jpg";
         File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
+        File image = new File(storageDir, imageFileName);
         // Save a file: path for use with ACTION_VIEW intents
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
