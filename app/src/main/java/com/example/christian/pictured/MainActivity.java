@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
 
 //        Bitmap mBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
 
-        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.fiets);
+        Bitmap mBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.meid);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         mBitmap.compress(Bitmap.CompressFormat.JPEG,100,outputStream);
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(outputStream.toByteArray());
