@@ -38,3 +38,14 @@ In-app camera gerealiseerd, om erachter te komen dat een externe camera aanroepe
 
 Gemaakte Snap opslaan en weergeven in MainActivity.
 
+### Woensdag 17-01-18
+
+Code opgeschoond. Veel nettere code nu.
+
+### Donderdag 18-01-18
+
+Dak was ingestort van de UvA, vandaar geen activiteiten.
+
+### Vrijdag 19-01-18
+
+Menuscherm design

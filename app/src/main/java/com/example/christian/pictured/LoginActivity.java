@@ -232,19 +232,14 @@ public class LoginActivity extends BaseActivity implements
 
                     // store UserData object in Firebase
                     mDatabase.child("users").child(user.getUid()).setValue(data);
-                    toaster("Added meuk");
+                    toaster("Welcome, " + GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getGivenName());
                 }
-                else {
-                    toaster("Bestaat al bitch");
-                }
-
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
                 Log.w(TAG, "loadPost:onCancelled", databaseError.toException());
-                // ...
             }
         };
         mDatabase.addListenerForSingleValueEvent(postListener);

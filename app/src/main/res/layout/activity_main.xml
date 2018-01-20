@@ -4,103 +4,127 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffffff"
+    android:background="@drawable/menu_background"
     tools:context="com.example.christian.pictured.MainActivity">
 
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="655dp"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="2dp">
+    <ImageView
+        android:id="@+id/user"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/snap"
+        app:layout_constraintEnd_toStartOf="@+id/snap"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:srcCompat="@drawable/account" />
 
-        <Button
-            android:id="@+id/signOut"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:onClick="signOutClicked"
-            android:text="Button"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="199dp" />
+    <ImageView
+        android:id="@+id/settings"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="65dp"
+        android:layout_marginEnd="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintStart_toEndOf="@+id/social"
+        app:layout_constraintTop_toBottomOf="@+id/social"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:srcCompat="@drawable/settings" />
 
-        <Button
-            android:id="@+id/photo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/signOut"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="50dp"
-            android:onClick="photo"
-            android:text="photo in app"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="429dp" />
+    <ImageView
+        android:id="@+id/snap"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:elevation="30dp"
+        app:layout_constraintBottom_toTopOf="@+id/social"
+        app:layout_constraintEnd_toStartOf="@+id/social"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
 
-        <Button
-            android:id="@+id/photoAlt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/photo"
-            android:layout_centerHorizontal="true"
-            android:onClick="photoOut"
-            android:text="photo out app"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="373dp" />
+        app:layout_constraintStart_toEndOf="@+id/user"
+        app:layout_constraintTop_toBottomOf="@+id/user"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:srcCompat="@drawable/snap" />
 
-        <TextView
-            android:id="@+id/usernameText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignTop="@+id/signOut"
-            android:layout_marginEnd="17dp"
-            android:text="TextView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="172dp" />
+    <ImageView
+        android:id="@+id/social"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        app:layout_constraintBottom_toTopOf="@+id/settings"
+        app:layout_constraintEnd_toStartOf="@+id/settings"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
 
-        <ImageView
-            android:id="@+id/thumbnail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/photoAlt"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="163dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:srcCompat="@mipmap/ic_launcher"
-            tools:layout_editor_absoluteY="578dp" />
+        app:layout_constraintStart_toEndOf="@+id/snap"
+        app:layout_constraintTop_toBottomOf="@+id/snap"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        app:srcCompat="@drawable/social" />
 
-        <TextView
-            android:id="@+id/thingText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/photoAlt"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="29dp"
-            android:text="TextView" />
+    <TextView
+        android:id="@+id/play_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/galindo"
+        android:text="Play"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/snap"
+        app:layout_constraintStart_toStartOf="@+id/snap"
+        app:layout_constraintTop_toBottomOf="@+id/snap" />
 
-        <Button
-            android:id="@+id/processButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/thingText"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:text="Process image..." />
+    <TextView
+        android:id="@+id/social_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/galindo"
+        android:text="Social"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/social"
+        app:layout_constraintStart_toStartOf="@+id/social"
+        app:layout_constraintTop_toBottomOf="@+id/social" />
 
-        <TextView
-            android:id="@+id/descText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/thingText"
-            android:layout_below="@+id/processButton"
-            android:text="Loading..." />
+    <TextView
+        android:id="@+id/settings_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/galindo"
+        android:text="Settings"
+        android:textAlignment="center"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/settings"
+        app:layout_constraintStart_toStartOf="@+id/settings"
+        app:layout_constraintTop_toBottomOf="@+id/settings" />
 
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/user_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/galindo"
+        android:text="User"
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/user"
+        app:layout_constraintStart_toStartOf="@+id/user"
+        app:layout_constraintTop_toBottomOf="@+id/user" />
+
 </android.support.constraint.ConstraintLayout>
