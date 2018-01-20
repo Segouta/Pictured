@@ -1,10 +1,15 @@
 package com.example.christian.pictured;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Slide;
 import android.view.View;
+import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -13,12 +18,22 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class UserActivity extends AppCompatActivity {
+import static android.view.Gravity.TOP;
+
+public class UserActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private ImageView back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
+
+        back = findViewById(R.id.backButton);
+        back.setOnClickListener(this);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+        getWindow().setEnterTransition(new Slide(TOP));
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -60,5 +75,13 @@ public class UserActivity extends AppCompatActivity {
     public void toaster(String message) {
         // toasts string
         Toast.makeText(UserActivity.this, message, Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+        if (v.equals(back)) {
+            this.onBackPressed();
+        }
     }
 }

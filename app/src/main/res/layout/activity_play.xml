@@ -7,6 +7,20 @@
     android:background="@drawable/pink_background"
     tools:context="com.example.christian.pictured.PlayActivity">
 
+    <ImageView
+        android:id="@+id/backButton"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:rotation="180"
+        android:outlineProvider="bounds"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="@drawable/back" />
+
     <Button
         android:id="@+id/processButton"
         android:layout_width="80dp"

@@ -1,12 +1,27 @@
 package com.example.christian.pictured;
 
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.ChangeBounds;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +34,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.io.InputStream;
+import java.net.URL;
+
+import static android.view.Gravity.BOTTOM;
+import static android.view.Gravity.END;
+import static android.view.Gravity.TOP;
 
 // Key 1: 364da92137ce4d0d99397ae2b2c5a29b
 // Key 2: fa76fa5671624f87b26cc8e3f61148a7
@@ -39,6 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
         setListener();
 
@@ -61,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (googleAccount != null) {
             username.setText(googleAccount.getGivenName());
         }
+
+        new downLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -73,6 +99,44 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+    }
+
+//    TODO: Deze hele class moet eruit gekickt. Maar moet ik een async maken per class? Want bij playactivity ook sloom.
+
+    private class downLoadImageTask extends AsyncTask<String,Void,Bitmap> {
+        ImageView imageView;
+
+        public downLoadImageTask(ImageView imageView){
+            this.imageView = imageView;
+        }
+
+        /*
+            doInBackground(Params... params)
+                Override this method to perform a computation on a background thread.
+         */
+        protected Bitmap doInBackground(String...urls){
+            String urlOfImage = urls[0];
+            Bitmap logo = null;
+            try{
+                InputStream is = new URL(urlOfImage).openStream();
+                /*
+                    decodeStream(InputStream is)
+                        Decode an input stream into a bitmap.
+                 */
+                logo = BitmapFactory.decodeStream(is);
+            }catch(Exception e){ // Catch the download exception
+                e.printStackTrace();
+            }
+            return logo;
+        }
+
+        /*
+            onPostExecute(Result result)
+                Runs on the UI thread after doInBackground(Params...).
+         */
+        protected void onPostExecute(Bitmap result){
+            imageView.setImageBitmap(result);
+        }
     }
 
     private void setListener() {
@@ -105,17 +169,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
+        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
         if (v.equals(user)) {
-            startActivity(new Intent(MainActivity.this, UserActivity.class));
+            startActivity(new Intent(MainActivity.this, UserActivity.class),
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         }
         else if (v.equals(play)) {
-            startActivity(new Intent(MainActivity.this, PlayActivity.class));
+            startActivity(new Intent(MainActivity.this, PlayActivity.class),
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         }
         else if (v.equals(social)) {
-            startActivity(new Intent(MainActivity.this, SocialActivity.class));
+            startActivity(new Intent(MainActivity.this, SocialActivity.class),
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         }
         else if (v.equals(settings)) {
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            startActivity(new Intent(MainActivity.this, SettingsActivity.class),
+                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
         }
     }
 }

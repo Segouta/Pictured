@@ -5,7 +5,11 @@ import android.content.Intent;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.transition.Explode;
+import android.transition.Fade;
+import android.transition.Slide;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,6 +21,9 @@ import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
+import static android.view.Gravity.BOTTOM;
+import static android.view.Gravity.TOP;
+
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
 
     static final int REQUEST_TAKE_PHOTO = 1;
@@ -25,8 +32,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private TextView thingText, tagText, descText;
 
-    private Button openCameraButton, processButton, backButton;
-    private ImageView snapImage;
+    private Button openCameraButton, processButton;
+    private ImageView snapImage, back;
     private ProgressDialog progressDialog;
 
     private CameraManager myCameraManager;
@@ -38,6 +45,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        getWindow().setEnterTransition(new Slide(TOP));
+
         processButton = findViewById(R.id.processButton);
         openCameraButton = findViewById(R.id.openCameraButton);
 
@@ -48,6 +57,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         snapImage = findViewById(R.id.snapImage);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        back = findViewById(R.id.backButton);
+        back.setOnClickListener(this);
 
         myCameraManager = new CameraManager(this);
         myServerManager = new ServerManager(this, mDatabase);
@@ -108,9 +120,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             progressDialog.show();
             myMSVisionManager.startVisionCheck();
         }
-        if(v.equals(openCameraButton)) {
+        else if(v.equals(openCameraButton)) {
             dispatchTakePictureIntent();
         }
+        else if (v.equals(back)) {
+            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+            this.onBackPressed();
+        }
     }
-
 }
+
