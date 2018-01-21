@@ -38,7 +38,7 @@ public class SocialActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View v) {
-        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.back_click));
         if (v.equals(back)) {
             this.onBackPressed();
         }

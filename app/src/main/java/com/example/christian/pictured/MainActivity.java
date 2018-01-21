@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView username;
 
     UserActivity userActivity = new UserActivity();
+
     GoogleSignInAccount googleAccount;
 
     DatabaseReference mDatabase;
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
+
+//        TODO: probleem is als je uitlogt vanuit useractivity gaat dat hij weer in main komt.
 
         setListener();
 
@@ -86,7 +89,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             username.setText(googleAccount.getGivenName());
         }
 
-        new downLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
+        new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
+
+//        TODO:load plaatje hier alvast, zodat overgang soepeler
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -102,42 +107,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 //    TODO: Deze hele class moet eruit gekickt. Maar moet ik een async maken per class? Want bij playactivity ook sloom.
-
-    private class downLoadImageTask extends AsyncTask<String,Void,Bitmap> {
-        ImageView imageView;
-
-        public downLoadImageTask(ImageView imageView){
-            this.imageView = imageView;
-        }
-
-        /*
-            doInBackground(Params... params)
-                Override this method to perform a computation on a background thread.
-         */
-        protected Bitmap doInBackground(String...urls){
-            String urlOfImage = urls[0];
-            Bitmap logo = null;
-            try{
-                InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
-                logo = BitmapFactory.decodeStream(is);
-            }catch(Exception e){ // Catch the download exception
-                e.printStackTrace();
-            }
-            return logo;
-        }
-
-        /*
-            onPostExecute(Result result)
-                Runs on the UI thread after doInBackground(Params...).
-         */
-        protected void onPostExecute(Bitmap result){
-            imageView.setImageBitmap(result);
-        }
-    }
 
     private void setListener() {
 

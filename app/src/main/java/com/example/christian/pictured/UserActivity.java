@@ -10,9 +10,11 @@ import android.transition.Slide;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,9 +22,15 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import static android.view.Gravity.TOP;
 
+//TODO: wtf swipeback wil ik...
+
 public class UserActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private ImageView back;
+    private ImageView back, logOutButton, avatarImage;
+
+    private TextView username;
+
+    GoogleSignInAccount googleAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +38,24 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_user);
 
         back = findViewById(R.id.backButton);
+        logOutButton = findViewById(R.id.logOutButton);
+        avatarImage = findViewById(R.id.avatarImage);
+
+        username = findViewById(R.id.usernameText);
+
         back.setOnClickListener(this);
+        logOutButton.setOnClickListener(this);
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         getWindow().setEnterTransition(new Slide(TOP));
+
+        googleAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+        if (googleAccount != null) {
+            username.setText(googleAccount.getGivenName());
+        }
+
+        new DownLoadImageTask(avatarImage).execute(googleAccount.getPhotoUrl().toString());
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -60,7 +82,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
                 new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        toaster("signed out");
+                        toaster("Signed Out");
                     }
                 });
 
@@ -69,7 +91,7 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
     public void goToLoginActivity(){
         startActivity(new Intent(UserActivity.this, LoginActivity.class));
-        finish();
+        finishAffinity();
     }
 
     public void toaster(String message) {
@@ -79,9 +101,12 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.back_click));
         if (v.equals(back)) {
             this.onBackPressed();
+        }
+        else if (v.equals(logOutButton)) {
+            signOut();
         }
     }
 }

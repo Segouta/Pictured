@@ -2,11 +2,10 @@ package com.example.christian.pictured;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.Explode;
-import android.transition.Fade;
 import android.transition.Slide;
 import android.view.View;
 import android.view.animation.AnimationUtils;
@@ -17,16 +16,13 @@ import android.widget.TextView;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 
-import static android.view.Gravity.BOTTOM;
 import static android.view.Gravity.TOP;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
 
-    static final int REQUEST_TAKE_PHOTO = 1;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
 
     DatabaseReference mDatabase;
 
@@ -47,12 +43,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         getWindow().setEnterTransition(new Slide(TOP));
 
-        processButton = findViewById(R.id.processButton);
-        openCameraButton = findViewById(R.id.openCameraButton);
+//        processButton = findViewById(R.id.processButton);
+//        openCameraButton = findViewById(R.id.openCameraButton);
 
         thingText = findViewById(R.id.thingText);
-        tagText = findViewById(R.id.tagText);
-        descText = findViewById(R.id.descText);
+//        tagText = findViewById(R.id.tagText);
+//        descText = findViewById(R.id.descText);
 
         snapImage = findViewById(R.id.snapImage);
 
@@ -65,8 +61,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         myServerManager = new ServerManager(this, mDatabase);
         myMSVisionManager = new MSVisionManager(this, myCameraManager);
 
-        processButton.setOnClickListener(this);
-        openCameraButton.setOnClickListener(this);
+//        processButton.setOnClickListener(this);
+//        openCameraButton.setOnClickListener(this);
 
         setLastImageThumbnail();
     }
@@ -84,31 +80,27 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    private void setLastImageThumbnail()
-    {
-        snapImage.setImageBitmap(myCameraManager.getThumbnail());
+    private void setLastImageThumbnail() {
+        snapImage.setImageBitmap(getResizedBitmap(myCameraManager.getThumbnail(), 200));
     }
 
-    public void visionCheckDone(String description, ArrayList<String> tags)
-    {
-        TextView descText = findViewById(R.id.descText);
-        TextView tagText = findViewById(R.id.tagText);
-        descText.setText(description);
-        tagText.setText(tags.toString());
+    public void visionCheckDone(String description, ArrayList<String> tags) {
+//        TextView descText = findViewById(R.id.descText);
+//        TextView tagText = findViewById(R.id.tagText);
+//        descText.setText(description);
+//        tagText.setText(tags.toString());
         progressDialog.dismiss();
     }
 
-    public void newThingArrived()
-    {
+    public void newThingArrived() {
         thingText.setText(myServerManager.getThingText());
     }
 
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, myCameraManager.getImageFileURI());
-            startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
         }
     }
 
@@ -124,9 +116,24 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             dispatchTakePictureIntent();
         }
         else if (v.equals(back)) {
-            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.back_click));
             this.onBackPressed();
         }
+    }
+
+    public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+
+        float bitmapRatio = (float)width / (float) height;
+        if (bitmapRatio > 0) {
+            width = maxSize;
+            height = (int) (width / bitmapRatio);
+        } else {
+            height = maxSize;
+            width = (int) (height * bitmapRatio);
+        }
+        return Bitmap.createScaledBitmap(image, width, height, true);
     }
 }
 

@@ -39,7 +39,7 @@ public class CameraManager {
             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
             return myBitmap;
         }
-        return BitmapFactory.decodeResource(parent.getResources(), R.drawable.icon);
+        return BitmapFactory.decodeResource(parent.getResources(), R.drawable.new_icon);
     }
 
     public String getCameraFilePath()
