@@ -7,6 +7,20 @@
     android:background="@drawable/pink_trans_background"
     tools:context="com.example.christian.pictured.PlayActivity">
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/snapImage"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="50dp"
+        app:civ_border_color="#ffffff"
+        app:civ_border_width="6dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ImageView
         android:id="@+id/backButton"
         android:layout_width="60dp"

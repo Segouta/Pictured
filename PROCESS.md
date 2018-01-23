@@ -48,4 +48,23 @@ Dak was ingestort van de UvA, vandaar geen activiteiten.
 
 ### Vrijdag 19-01-18
 
-Menuscherm design
+Menuscherm design is nu af.
+
+### Zaterdag 20-01-18
+
+Brainstormsessie over exacte game-elementen.
+Interface mooi maken, verschillende activities sliden nu over in elkaar. Ook logootjes toegevoegd.
+
+### Zondag 21-01-18
+
+Begin gemaakt aan PlayActivity. Cadeautje verschijnt met timer erop.
+
+### Maandag 22-01-18
+
+PlayActivity verbeterd. Nu zijn er allerlei animaties toegevoegd die de UX verbeteren.
+
+### Dinsdag 23-01-18
+
+PlayActivity verder afgemaakt. Opent camera, showt de snap, en beoordeelt of de foto voldoet aan de opdracht.
+
+### Woensdag 24-01-18

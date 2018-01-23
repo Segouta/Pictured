@@ -8,5 +8,7 @@
     <color name="loadingB">#2eff4400</color>
     <color name="badge">#41ff8e8e</color>
     <color name="badge_inside">#000088ff</color>
+    <color name="found">#09ab00</color>
+    <color name="failed">#c40000</color>
 
 </resources>

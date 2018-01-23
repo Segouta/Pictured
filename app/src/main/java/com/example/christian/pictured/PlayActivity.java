@@ -2,13 +2,18 @@ package com.example.christian.pictured;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
@@ -22,6 +27,9 @@ import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import android.Manifest;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -48,7 +56,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private MSVisionManager myMSVisionManager;
     private ServerManager myServerManager;
 
-    Animation zoomin, fadein, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera;
+    String thing;
+
+    Animation zoomin, fadein, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show;
 
     CountdownView acceptTimer, playTimer;
 
@@ -56,6 +66,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
+            }
+        }
 
         getWindow().setEnterTransition(new Slide(TOP));
 
@@ -94,16 +110,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         rotate_right = AnimationUtils.loadAnimation(this, R.anim.rotate_right);
         fade = AnimationUtils.loadAnimation(this, R.anim.fade);
         rotate_camera = AnimationUtils.loadAnimation(this, R.anim.rotate_camera);
+        snap_show = AnimationUtils.loadAnimation(this, R.anim.snap_show);
 
         stripes.setAnimation(rotate_right);
         badge.setAnimation(AnimationUtils.loadAnimation(this, R.anim.rotate_left));
         box.setAnimation(AnimationUtils.loadAnimation(this, R.anim.zoomin));
         light.setAnimation(fadein);
 
-        //TODO: animatie van counter ook werkend...
-//        timer.startAnimation(zoomout);
-
-//        snapImage = findViewById(R.id.snapImage);
+        snapImage = findViewById(R.id.snapImage);
+        snapImage.setVisibility(View.INVISIBLE);
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -129,9 +144,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openBox() {
-        makeBoxInvisible();
         acceptTimer.stop();
-        thingText.setText(myServerManager.getThingText());
+        makeBoxInvisible();
+        thing = myServerManager.getThingText();
+        thingText.setText(thing);
         showThingText();
         openCameraButton.setAnimation(rotate_camera);
         cameraButtonLayout.setAnimation(fly_in);
@@ -177,7 +193,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setLastImageThumbnail() {
-//        snapImage.setImageBitmap(getResizedBitmap(myCameraManager.getThumbnail(), 200));
+        snapImage.setImageBitmap(getResizedBitmap(myCameraManager.getThumbnail(), 250));
     }
 
     public void visionCheckDone(String description, ArrayList<String> tags) {
@@ -186,6 +202,26 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 //        descText.setText(description);
 //        tagText.setText(tags.toString());
         progressDialog.dismiss();
+        snapImage.setVisibility(View.VISIBLE);
+        snapImage.setAnimation(snap_show);
+
+        thingText.setText(tags.toString());
+        compareVisionAndObject(tags);
+    }
+
+    public void compareVisionAndObject(ArrayList<String> tags) {
+        if (tags.contains(thing)) {
+            toaster("goedzo");
+            thingText.setTextColor(getResources().getColor(R.color.found));
+        } else {
+            toaster("sukkel");
+            thingText.setTextColor(getResources().getColor(R.color.failed));
+        }
+    }
+
+    public void toaster(String message) {
+        // toasts string
+        Toast.makeText(PlayActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     public void getThing(){
@@ -204,8 +240,21 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void onActivityResult() {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_IMAGE_CAPTURE) {
+            openCameraButton.clearAnimation();
+            cameraButtonLayout.clearAnimation();
+            cameraButtonLayout.setVisibility(View.INVISIBLE);
+            playTimer.pause();
 
+            progressDialog = new ProgressDialog(PlayActivity.this);
+            progressDialog.setMessage("Analyzing dat snap...");
+            progressDialog.show();
+            myMSVisionManager.startVisionCheck();
+            setLastImageThumbnail();
+        }
     }
 
     @Override

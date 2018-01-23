@@ -16,6 +16,8 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.regex.PatternSyntaxException;
 
 /*
  * Created by Christian on 17-1-2018.
@@ -62,7 +64,7 @@ public class VisionTask extends AsyncTask<InputStream, String, String>{
             JSONObject info = new JSONObject(s);
 
             JSONArray tagArray = info.getJSONObject("description").getJSONArray("tags");
-            String guesString = info.getJSONObject("description").getJSONArray("captions").getJSONObject(0).getString("text");
+            String guessString = info.getJSONObject("description").getJSONArray("captions").getJSONObject(0).getString("text");
 
             int amountOfTags = tagArray.length();
 
@@ -70,8 +72,14 @@ public class VisionTask extends AsyncTask<InputStream, String, String>{
             for(int i = 0; i < amountOfTags; i++) {
                 tagList.add(tagArray.get(i).toString());
             }
+            try {
+                String[] splitArray = guessString.split("\\s+");
+                tagList.addAll(Arrays.asList(splitArray));
+            } catch (PatternSyntaxException ex) {
+                // error
+            }
 
-            parent.visionCheckDone(guesString , tagList);
+            parent.visionCheckDone(guessString , tagList);
         } catch (JSONException e) {
             e.printStackTrace();
         }

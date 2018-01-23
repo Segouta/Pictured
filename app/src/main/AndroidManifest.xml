@@ -3,9 +3,9 @@
     package="com.example.christian.pictured">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--<uses-permission-->
-        <!--android:name="android.permission.CAMERA"-->
-        <!--android:required="true" />-->
+    <uses-permission
+        android:name="android.permission.CAMERA"
+        android:required="true" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="18" />
@@ -47,11 +47,9 @@
         </provider>
 
         <activity android:name=".PlayActivity"
-            android:screenOrientation="portrait"
-            />
+            android:screenOrientation="portrait"/>
         <activity android:name=".UserActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/DragDismissTheme"/>
+            android:screenOrientation="portrait"/>
         <activity android:name=".SettingsActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".SocialActivity"
