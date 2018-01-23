@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="wait_messages">
+        <item>Hmm. Looks like you are\na bit too late!</item>
+        <item>Play along next game!\nYou will be notified!</item>
+        <item>Unlucky in the game,\nlucky in love...</item>
+        <item>We know you want to play!\nJoin again next game!</item>
+        <item>A new item will be\ndropped every 0.5 - 2 hours!</item>
+        <item>Better go for a walk and\nscout for items you expect!</item>
+        <item>Game has already started :(\nStay tuned though!</item>
+        <item>Keep up your ranking\nby Snapping quicker then\n others!</item>
+        <item>Did you know your ranking is\ndetermined by your last\nscores?</item>
+        <item>Be quick, be agile, \nbe (snap)that warrior.</item>
+    </string-array>
+
+</resources>

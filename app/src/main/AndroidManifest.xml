@@ -47,13 +47,19 @@
         </provider>
 
         <activity android:name=".PlayActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            />
         <activity android:name=".UserActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/DragDismissTheme"/>
         <activity android:name=".SettingsActivity"
             android:screenOrientation="portrait"/>
         <activity android:name=".SocialActivity"
             android:screenOrientation="portrait"/>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

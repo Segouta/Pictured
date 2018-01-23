@@ -7,7 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,12 +21,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.liuguangqiang.swipeback.SwipeBackActivity;
+
+import xyz.klinker.android.drag_dismiss.activity.DragDismissActivity;
 
 import static android.view.Gravity.TOP;
 
 //TODO: wtf swipeback wil ik...
 
-public class UserActivity extends AppCompatActivity implements View.OnClickListener {
+public class UserActivity extends DragDismissActivity implements View.OnClickListener {
 
     private ImageView back, logOutButton, avatarImage;
 
@@ -33,15 +38,24 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
     GoogleSignInAccount googleAccount;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_user);
+    public View onCreateContent(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
+        View v = inflater.inflate(R.layout.activity_user, parent, false);
+//        super.onCreate(savedInstanceState);
+        //setContentView(R.layout.activity_user);
 
-        back = findViewById(R.id.backButton);
-        logOutButton = findViewById(R.id.logOutButton);
-        avatarImage = findViewById(R.id.avatarImage);
+        View decorView = getWindow().getDecorView();
+        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
 
-        username = findViewById(R.id.usernameText);
+        back = v.findViewById(R.id.backButton);
+        logOutButton = v.findViewById(R.id.logOutButton);
+        avatarImage = v.findViewById(R.id.avatarImage);
+
+        username = v.findViewById(R.id.usernameText);
 
         back.setOnClickListener(this);
         logOutButton.setOnClickListener(this);
@@ -56,6 +70,8 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         new DownLoadImageTask(avatarImage).execute(googleAccount.getPhotoUrl().toString());
+
+        return v;
     }
 
     // onResume callback, used to make the nav bar and status bar disappear

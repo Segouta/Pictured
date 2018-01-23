@@ -14,43 +14,197 @@
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:outlineProvider="bounds"
+        android:rotation="180"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:rotation="180"
-        android:outlineProvider="bounds"
         app:layout_constraintStart_toStartOf="parent"
         app:srcCompat="@drawable/back" />
 
-    <TextView
-        android:id="@+id/thingText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/timerLayout"
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_alignEnd="@+id/boxLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="72dp"
-        android:fontFamily="@font/galindo"
-        android:text="LOADING..."
-        android:textAlignment="center"
-
-        android:textColor="#3e1b59"
-        android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/snapImage"
-        android:background="@drawable/outline"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginBottom="108dp"
-        android:layout_marginEnd="50dp"
-        android:layout_marginStart="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:fontFamily="@font/galindo"
+            android:text="SnapTime:"
+            android:textColor="#ffffff"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <cn.iwgang.countdownview.CountdownView
+            android:id="@+id/countupView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:isShowTimeBgBorder="true"
+            app:isTimeTextBold="true"
+            app:timeTextColor="#3e1b59"
+            app:timeTextSize="50dp" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/cameraButtonLayout"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginEnd="30dp"
+        android:layout_marginStart="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.538"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="@drawable/new_icon" />
+        tools:layout_editor_absoluteY="0dp">
+
+        <TextView
+            android:id="@+id/cameraText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:fontFamily="@font/galindo"
+            android:text="Camera"
+            android:textColor="#ffffff"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/openCameraButton"
+            app:layout_constraintStart_toStartOf="@+id/openCameraButton"
+            app:layout_constraintTop_toBottomOf="@+id/openCameraButton" />
+
+        <ImageView
+            android:id="@+id/openCameraButton"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_alignTop="@+id/light"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="80dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/snap" />
+
+    </android.support.constraint.ConstraintLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/thingText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:fontFamily="@font/galindo"
+            android:text="Loading..."
+            android:textAlignment="center"
+            android:textColor="#ffffff"
+            android:textSize="30sp"
+            app:layout_constraintBottom_toTopOf="@+id/boxLayout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.464" />
+
+        <ImageView
+            android:id="@+id/light"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/light" />
+
+        <RelativeLayout
+            android:id="@+id/boxLayout"
+            android:layout_width="360dp"
+            android:layout_height="360dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/loading"
+                android:layout_width="360dp"
+                android:layout_height="360dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                app:srcCompat="@drawable/loading" />
+
+            <ImageView
+                android:id="@+id/badge"
+                android:layout_width="310dp"
+                android:layout_height="310dp"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                app:srcCompat="@drawable/badge" />
+
+            <RelativeLayout
+                android:id="@+id/boxTimerLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/boxImage"
+                    android:layout_width="250dp"
+                    android:layout_height="250dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/unopened_box" />
+
+                <cn.iwgang.countdownview.CountdownView
+                    android:id="@+id/countdownView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/boxImage"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginBottom="83dp"
+                    app:isHideTimeBackground="true"
+                    app:isShowMinute="true"
+                    app:isShowSecond="true"
+                    app:isShowTimeBgDivisionLine="true"
+                    app:isSuffixTextBold="true"
+                    app:isTimeTextBold="true"
+                    app:timeBgDivisionLineColor="#ffffff"
+                    app:timeBgDivisionLineSize="24dp"
+                    app:timeTextColor="#ffffff"
+                    app:timeTextSize="30dp"
+                    tools:layout_editor_absoluteX="481dp"
+                    tools:layout_editor_absoluteY="321dp" />
+
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>
