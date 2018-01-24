@@ -10,5 +10,7 @@
     <color name="badge_inside">#000088ff</color>
     <color name="found">#09ab00</color>
     <color name="failed">#c40000</color>
+    <color name="found_trans">#6409ab00</color>
+    <color name="failed_trans">#64c40000</color>
 
 </resources>

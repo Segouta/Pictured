@@ -1,5 +1,7 @@
 # Logboek
 
+[![BCH compliance](https://bettercodehub.com/edge/badge/Segouta/Pictured?branch=master)](https://bettercodehub.com/)
+
 ### Maandag 08-01-18
 
 Idee verzonnen. Initiële idee afgewezen. Hele dag gebrainstormd, uiteindelijk op SnapThat gekomen.

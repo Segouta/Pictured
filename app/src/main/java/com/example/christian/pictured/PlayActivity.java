@@ -5,21 +5,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.os.CountDownTimer;
 import android.provider.MediaStore;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -44,7 +39,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     DatabaseReference mDatabase;
 
-    private TextView thingText, tagText, descText;
+    private TextView thingText, tagText, descText, snapTime;
 
     private Button processButton;
     private ImageView snapImage, back, stripes, badge, light, openCameraButton;
@@ -57,6 +52,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private ServerManager myServerManager;
 
     String thing;
+
+    long startTime = 25*60*1000;
 
     Animation zoomin, fadein, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show;
 
@@ -78,7 +75,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         acceptTimer = findViewById(R.id.countdownView);
         playTimer = findViewById(R.id.countupView);
 
-        acceptTimer.start(3*1000);
+        acceptTimer.start(60*1000);
 
 //        processButton = findViewById(R.id.processButton);
         openCameraButton = findViewById(R.id.openCameraButton);
@@ -100,6 +97,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         light = findViewById(R.id.light);
         stripes = findViewById(R.id.loading);
         badge = findViewById(R.id.badge);
+        snapTime = findViewById(R.id.snapTime);
 
         click_exit = AnimationUtils.loadAnimation(this, R.anim.click_box_exit);
         zoomin = AnimationUtils.loadAnimation(this, R.anim.zoomin);
@@ -138,7 +136,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         acceptTimer.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
             @Override
             public void onEnd(CountdownView cv) {
-                timeExpired();
+                openingTimeExpired();
+            }
+        });
+
+        playTimer.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
+            @Override
+            public void onEnd(CountdownView cv) {
+                playTimeExpired();
             }
         });
     }
@@ -154,7 +159,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         cameraButtonLayout.setVisibility(View.VISIBLE);
         timerLayout.setAnimation(fade);
         timerLayout.setVisibility(View.VISIBLE);
-        playTimer.start(25*60*1000);
+        playTimer.start(startTime);
     }
 
     private void showThingText() {
@@ -170,12 +175,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         boxLayout.setVisibility(View.INVISIBLE);
     }
 
-    private void timeExpired() {
+    private void openingTimeExpired() {
         makeBoxInvisible();
         thingText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
         String[] messagesArray = this.getResources().getStringArray(R.array.wait_messages);
         thingText.setText(messagesArray[new Random().nextInt(messagesArray.length)]);
         showThingText();
+    }
+
+    private void playTimeExpired() {
+        toaster("play time over bitch");
     }
 
     protected void onResume() {
@@ -205,17 +214,36 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         snapImage.setVisibility(View.VISIBLE);
         snapImage.setAnimation(snap_show);
 
-        thingText.setText(tags.toString());
         compareVisionAndObject(tags);
     }
 
     public void compareVisionAndObject(ArrayList<String> tags) {
         if (tags.contains(thing)) {
+            Long scoreTime = startTime - playTimer.getRemainTime();
+            playTimer.start(scoreTime);
+
+
+            openCameraButton.clearAnimation();
+            cameraButtonLayout.clearAnimation();
+            cameraButtonLayout.setVisibility(View.INVISIBLE);
             toaster("goedzo");
             thingText.setTextColor(getResources().getColor(R.color.found));
+            snapImage.setColorFilter(getResources().getColor(R.color.found_trans));
+
+            snapTime.setText("Snapped in: ");
+            System.out.println("-----------------------------");
+            System.out.println(scoreTime);
+
+//            TODO:WTFFFFF de tijd wil niet displayen stilstaand. doen...
+
+//
+            playTimer.stop();
+
         } else {
             toaster("sukkel");
             thingText.setTextColor(getResources().getColor(R.color.failed));
+            snapImage.setColorFilter(getResources().getColor(R.color.failed_trans));
+            playTimer.start(playTimer.getRemainTime());
         }
     }
 
@@ -244,15 +272,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-            openCameraButton.clearAnimation();
-            cameraButtonLayout.clearAnimation();
-            cameraButtonLayout.setVisibility(View.INVISIBLE);
             playTimer.pause();
 
             progressDialog = new ProgressDialog(PlayActivity.this);
             progressDialog.setMessage("Analyzing dat snap...");
             progressDialog.show();
             myMSVisionManager.startVisionCheck();
+
             setLastImageThumbnail();
         }
     }
@@ -275,6 +301,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         else if (v.equals(back)) {
             v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.back_click));
             this.onBackPressed();
+        }
+        else if (v.equals(snapImage)) {
+
         }
     }
 
