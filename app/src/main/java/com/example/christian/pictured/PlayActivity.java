@@ -27,6 +27,7 @@ import android.Manifest;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Random;
 
 import cn.iwgang.countdownview.CountdownView;
@@ -40,7 +41,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     DatabaseReference mDatabase;
 
     private TextView thingText, tagText, descText, snapTime;
-
+    private static PlayActivity sInstance;
     private Button processButton;
     private ImageView snapImage, back, stripes, badge, light, openCameraButton;
     private RelativeLayout boxLayout, box;
@@ -49,11 +50,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private CameraManager myCameraManager;
     private MSVisionManager myMSVisionManager;
-    private ServerManager myServerManager;
+   // private ServerManager myServerManager;
 
     String thing;
-
-    long startTime = 25*60*1000;
 
     Animation zoomin, fadein, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show;
 
@@ -62,6 +61,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        sInstance = this;
         setContentView(R.layout.activity_play);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -70,12 +70,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+
+
         getWindow().setEnterTransition(new Slide(TOP));
 
         acceptTimer = findViewById(R.id.countdownView);
         playTimer = findViewById(R.id.countupView);
 
-        acceptTimer.start(60*1000);
+
 
 //        processButton = findViewById(R.id.processButton);
         openCameraButton = findViewById(R.id.openCameraButton);
@@ -124,8 +126,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         back.setOnClickListener(this);
 
         myCameraManager = new CameraManager(this);
-        myServerManager = new ServerManager(this, mDatabase);
+
         myMSVisionManager = new MSVisionManager(this, myCameraManager);
+
+        startService(new Intent(PlayActivity.this, ServerManager.class));
 
 //        processButton.setOnClickListener(this);
         openCameraButton.setOnClickListener(this);
@@ -147,11 +151,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+    public static PlayActivity getInstance(){
+        return sInstance;
+    }
+
 
     private void openBox() {
         acceptTimer.stop();
         makeBoxInvisible();
-        thing = myServerManager.getThingText();
+
         thingText.setText(thing);
         showThingText();
         openCameraButton.setAnimation(rotate_camera);
@@ -159,7 +167,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         cameraButtonLayout.setVisibility(View.VISIBLE);
         timerLayout.setAnimation(fade);
         timerLayout.setVisibility(View.VISIBLE);
-        playTimer.start(startTime);
+//        playTimer.start(60*1000);
     }
 
     private void showThingText() {
@@ -219,8 +227,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void compareVisionAndObject(ArrayList<String> tags) {
         if (tags.contains(thing)) {
-            Long scoreTime = startTime - playTimer.getRemainTime();
-            playTimer.start(scoreTime);
+//            Long scoreTime = startTime - playTimer.getRemainTime();
+//            playTimer.updateShow(scoreTime);
 
 
             openCameraButton.clearAnimation();
@@ -232,12 +240,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             snapTime.setText("Snapped in: ");
             System.out.println("-----------------------------");
-            System.out.println(scoreTime);
+//            System.out.println(scoreTime);
 
 //            TODO:WTFFFFF de tijd wil niet displayen stilstaand. doen...
 
 //
-            playTimer.stop();
+//            playTimer.stop();
 
         } else {
             toaster("sukkel");
@@ -256,8 +264,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
-    public void newThingArrived() {
-//        thingText.setText(myServerManager.getThingText());
+    public void newThingArrived(ServerManager me) {
+        //TODO: send notification when not running
+        thing = me.getThingText();
+        thingText.setText(me.getThingText());
+       // if (playTimer.getRemainTime() > 0) {
+            playTimer.start(me.getEndMillis() - new Date().getTime());
+       // }
+        acceptTimer.start(me.getEndMillis() - new Date().getTime());
     }
 
     private void dispatchTakePictureIntent() {

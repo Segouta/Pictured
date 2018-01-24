@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#5db9b9b9</color>
+    <color name="colorPrimary">#5db9b9</color>
+    <color name="transparentOverlay">#13131313</color>
     <color name="colorPrimaryDark">#3d000000</color>
     <color name="colorAccent">#ab7fe6aa</color>
-    <color name="transparentOverlay">#13131313</color>
     <color name="loadingA">#28ffea4b</color>
     <color name="loadingB">#2eff4400</color>
     <color name="badge">#41ff8e8e</color>
