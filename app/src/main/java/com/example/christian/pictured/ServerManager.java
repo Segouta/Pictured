@@ -16,6 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,15 +29,13 @@ import java.util.Random;
 import static java.lang.Math.signum;
 import static java.lang.Math.toIntExact;
 
-public class ServerManager extends Service implements ValueEventListener {
+public class ServerManager extends Service implements ChildEventListener {
 
     private DatabaseReference mDatabase;
 
     private long endMillis;
     private String thingText;
     private static ServerManager sInstance;
-
-    PlayActivity playActivity = new PlayActivity();
 
     public ServerManager()
     {
@@ -53,7 +52,7 @@ public class ServerManager extends Service implements ValueEventListener {
     }
 
     @Override
-    public void onDataChange(DataSnapshot dataSnapshot) {
+    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
         final ArrayList<String> objects = new ArrayList<>();
         for (DataSnapshot child : dataSnapshot.child("things").getChildren()) {
@@ -61,8 +60,8 @@ public class ServerManager extends Service implements ValueEventListener {
             objects.add(object);
         }
 
-        Integer thingIndex = dataSnapshot.child("currentThing").child("index").getValue(Integer.class);
-        Long endMillisTmp = dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class);
+        Integer thingIndex = dataSnapshot.child("index").getValue(Integer.class);
+        Long endMillisTmp = dataSnapshot.child("endMillis").getValue(Long.class);
 
         if(endMillisTmp != null)
         {
@@ -75,7 +74,22 @@ public class ServerManager extends Service implements ValueEventListener {
 
         showNotification("A new present arrived!", "Click here to check it out!");
 
+        PlayActivity.getInstance().newThingArrived(this);
 
+    }
+
+    @Override
+    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+    }
+
+    @Override
+    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+    }
+
+    @Override
+    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
 
     }
 
@@ -98,8 +112,7 @@ public class ServerManager extends Service implements ValueEventListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         sInstance = this;
-        mDatabase.addValueEventListener(this);
-
+        mDatabase.child("currentThing").addChildEventListener(this);
 
         return START_STICKY;
     }
@@ -128,6 +141,7 @@ public class ServerManager extends Service implements ValueEventListener {
         Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pi);
+
         mNotificationManager.notify(0, mBuilder.build());
     }
 

@@ -20,6 +20,7 @@ import android.transition.Explode;
 import android.transition.Fade;
 import android.transition.Slide;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -34,6 +35,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -62,7 +65,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+// If a notification message is tapped, any data accompanying the notification
+        // message is available in the intent extras. In this project the launcher
+        // intent is fired when the notification is tapped, so any accompanying data would
+        // be handled here. If you want a different intent fired, set the click_action
+        // field of the notification message to the desired intent. The launcher intent
+        // is used when no click_action is specified.
+        //
+        // Handle possible data accompanying notification message.
+        if (getIntent().getExtras() != null) {
 
+            for (String key : getIntent().getExtras().keySet()) {
+                String value = getIntent().getExtras().getString(key);
+
+                if (key.equals("AnotherActivity") && value.equals("True")) {
+                    Intent intent = new Intent(this, PlayActivity.class);
+                    intent.putExtra("value", value);
+                    startActivity(intent);
+                    finish();
+                }
+
+            }
+        }
+
+        subscribeToPushService();
+//        FirebaseMessaging.getInstance().subscribeToTopic("thing-updates");
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
 //        TODO: probleem is als je uitlogt vanuit useractivity gaat dat hij weer in main komt.
@@ -92,6 +119,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
 
 //        TODO:load plaatje hier alvast, zodat overgang soepeler
+    }
+
+    private void subscribeToPushService() {
+        FirebaseMessaging.getInstance().subscribeToTopic("news");
+
+        Toast.makeText(MainActivity.this, "Subscribed", Toast.LENGTH_SHORT).show();
+
+        String token = FirebaseInstanceId.getInstance().getToken();
+
+        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
     }
 
     // onResume callback, used to make the nav bar and status bar disappear

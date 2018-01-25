@@ -1,6 +1,8 @@
 package com.example.christian.pictured;
 
+import android.app.ActivityManager;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -87,8 +89,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         openCameraButton = findViewById(R.id.openCameraButton);
 
         thingText = findViewById(R.id.thingText);
-
         thingText.setVisibility(View.INVISIBLE);
+
 //        tagText = findViewById(R.id.tagText);
 //        descText = findViewById(R.id.descText);
 
@@ -172,19 +174,19 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setLayout(String layoutState) {
-        if (layoutState.equals("unopened")) {
-            setVisibilities(false, false, true, false, false, false);
-        } else if (layoutState.equals("opened")) {
-            setVisibilities(true, true, false, false, true, false);
-        } else if (layoutState.equals("attempted")) {
-            setVisibilities(true, true, false, false, true, true);
-        } else if (layoutState.equals("found")) {
-            setVisibilities(false, true, false, false, true, true);
-        } else if (layoutState.equals("expired")) {
-            setVisibilities(false, true, false, false, false, false);
-        } else if (layoutState.equals("expired_found")) {
-            setVisibilities(false, true, false, false, false, false);
-        }
+//        if (layoutState.equals("unopened")) {
+//            setVisibilities(false, false, true, false, false, false);
+//        } else if (layoutState.equals("opened")) {
+//            setVisibilities(true, true, false, false, true, false);
+//        } else if (layoutState.equals("attempted")) {
+//            setVisibilities(true, true, false, false, true, true);
+//        } else if (layoutState.equals("found")) {
+//            setVisibilities(false, true, false, false, true, true);
+//        } else if (layoutState.equals("expired")) {
+//            setVisibilities(false, true, false, false, false, false);
+//        } else if (layoutState.equals("expired_found")) {
+//            setVisibilities(false, true, false, false, false, false);
+//        }
     }
 
     private void storeLayout(String toStore) {
@@ -192,7 +194,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openBox() {
-        storeLayout("opened");
+//        storeLayout("opened");
         acceptTimer.stop();
         makeBoxInvisible();
 
@@ -309,9 +311,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void newThingArrived(ServerManager me) {
         //TODO: send notification when not running
         storeLayout("unopened");
-//        thing = me.getThingText();
+        thing = me.getThingText();
 
-        thingText.setText("laptop");
+
         thingText.setVisibility(View.VISIBLE);
        // if (playTimer.getRemainTime() > 0) {
             playTimer.start(me.getEndMillis() - new Date().getTime());
