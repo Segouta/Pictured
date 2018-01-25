@@ -83,7 +83,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             this.onBackPressed();
         }
         if (v.equals(notification)) {
-            showNotification("Hallo?", "dit is enen notificatei?");
+            showNotification("A new present arrived!", "Click here to check it out!");
         }
     }
 }

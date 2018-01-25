@@ -4,11 +4,13 @@ package com.example.christian.pictured;
  * Created by Christian on 17-1-2018.
  */
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -29,11 +31,12 @@ import static java.lang.Math.toIntExact;
 public class ServerManager extends Service implements ValueEventListener {
 
     private DatabaseReference mDatabase;
-    private PlayActivity parent;
 
     private long endMillis;
     private String thingText;
     private static ServerManager sInstance;
+
+    PlayActivity playActivity = new PlayActivity();
 
     public ServerManager()
     {
@@ -60,6 +63,7 @@ public class ServerManager extends Service implements ValueEventListener {
 
         Integer thingIndex = dataSnapshot.child("currentThing").child("index").getValue(Integer.class);
         Long endMillisTmp = dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class);
+
         if(endMillisTmp != null)
         {
             endMillis = endMillisTmp;
@@ -69,14 +73,10 @@ public class ServerManager extends Service implements ValueEventListener {
             thingText = objects.get(thingIndex);
         }
 
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.social)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
+        showNotification("A new present arrived!", "Click here to check it out!");
 
 
-            PlayActivity.getInstance().newThingArrived(this);
+
     }
 
     @Override
@@ -102,6 +102,33 @@ public class ServerManager extends Service implements ValueEventListener {
 
 
         return START_STICKY;
+    }
+
+    void showNotification(String title, String content) {
+
+        Uri notificationSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification);
+
+        long[] array = {3000};
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel("default",
+                    "SnapThatChannel",
+                    NotificationManager.IMPORTANCE_HIGH);
+            channel.setDescription("Notifications for SnapThat");
+            mNotificationManager.createNotificationChannel(channel);
+        }
+        NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(getApplicationContext(), "default")
+                .setSmallIcon(R.drawable.new_icon) // notification icon
+                .setContentTitle(title) // title for notification
+                .setContentText(content)// message for notification
+                .setVibrate(array)
+                .setSound(notificationSound) // set alarm sound for notification
+                .setAutoCancel(true); // clear notification after click
+        Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        mBuilder.setContentIntent(pi);
+        mNotificationManager.notify(0, mBuilder.build());
     }
 
     @Nullable

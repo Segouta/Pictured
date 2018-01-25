@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -50,8 +51,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private CameraManager myCameraManager;
     private MSVisionManager myMSVisionManager;
-   // private ServerManager myServerManager;
+    private UserServerManager myUserServerManager;
 
+
+    FirebaseAuth mAuth;
     String thing;
 
     Animation zoomin, fadein, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show;
@@ -64,13 +67,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         sInstance = this;
         setContentView(R.layout.activity_play);
 
+        // TODO: hier moet ik dus dat woord ophalen... hoe?
+//        setLayout();
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
             }
         }
-
-
 
         getWindow().setEnterTransition(new Slide(TOP));
 
@@ -122,11 +126,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        mAuth = FirebaseAuth.getInstance();
+
         back = findViewById(R.id.backButton);
         back.setOnClickListener(this);
 
         myCameraManager = new CameraManager(this);
-
+        myUserServerManager = new UserServerManager(this, mDatabase);
         myMSVisionManager = new MSVisionManager(this, myCameraManager);
 
         startService(new Intent(PlayActivity.this, ServerManager.class));
@@ -151,12 +157,42 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
     }
+
     public static PlayActivity getInstance(){
         return sInstance;
     }
 
+    private void setVisibilities(boolean cam, boolean thing, boolean box, boolean white, boolean playCounter, boolean image) {
+        cameraButtonLayout.setVisibility((cam ? View.VISIBLE : View.INVISIBLE));
+        thingText.setVisibility((thing ? View.VISIBLE : View.INVISIBLE));
+        boxLayout.setVisibility((box ? View.VISIBLE : View.INVISIBLE));
+        light.setVisibility((white ? View.VISIBLE : View.INVISIBLE));
+        playTimer.setVisibility((playCounter ? View.VISIBLE : View.INVISIBLE));
+        snapImage.setVisibility((image ? View.VISIBLE : View.INVISIBLE));
+    }
+
+    public void setLayout(String layoutState) {
+        if (layoutState.equals("unopened")) {
+            setVisibilities(false, false, true, false, false, false);
+        } else if (layoutState.equals("opened")) {
+            setVisibilities(true, true, false, false, true, false);
+        } else if (layoutState.equals("attempted")) {
+            setVisibilities(true, true, false, false, true, true);
+        } else if (layoutState.equals("found")) {
+            setVisibilities(false, true, false, false, true, true);
+        } else if (layoutState.equals("expired")) {
+            setVisibilities(false, true, false, false, false, false);
+        } else if (layoutState.equals("expired_found")) {
+            setVisibilities(false, true, false, false, false, false);
+        }
+    }
+
+    private void storeLayout(String toStore) {
+//        mDatabase.child("users").child(mAuth.getUid()).child("layout").setValue(toStore);
+    }
 
     private void openBox() {
+        storeLayout("opened");
         acceptTimer.stop();
         makeBoxInvisible();
 
@@ -184,6 +220,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openingTimeExpired() {
+        storeLayout("expired");
         makeBoxInvisible();
         thingText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
         String[] messagesArray = this.getResources().getStringArray(R.array.wait_messages);
@@ -192,6 +229,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void playTimeExpired() {
+        storeLayout("expired");
         toaster("play time over bitch");
     }
 
@@ -227,6 +265,9 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void compareVisionAndObject(ArrayList<String> tags) {
         if (tags.contains(thing)) {
+            mDatabase.child("users").child(mAuth.getUid()).child("history").setValue(1);
+            mDatabase.child("users").child(mAuth.getUid()).child("gamesAmount").setValue(1);
+            storeLayout("found");
 //            Long scoreTime = startTime - playTimer.getRemainTime();
 //            playTimer.updateShow(scoreTime);
 
@@ -248,6 +289,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 //            playTimer.stop();
 
         } else {
+            storeLayout("attempted");
             toaster("sukkel");
             thingText.setTextColor(getResources().getColor(R.color.failed));
             snapImage.setColorFilter(getResources().getColor(R.color.failed_trans));
@@ -266,8 +308,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void newThingArrived(ServerManager me) {
         //TODO: send notification when not running
-        thing = me.getThingText();
-        thingText.setText(me.getThingText());
+        storeLayout("unopened");
+//        thing = me.getThingText();
+
+        thingText.setText("laptop");
+        thingText.setVisibility(View.VISIBLE);
        // if (playTimer.getRemainTime() > 0) {
             playTimer.start(me.getEndMillis() - new Date().getTime());
        // }
@@ -286,6 +331,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
+
             playTimer.pause();
 
             progressDialog = new ProgressDialog(PlayActivity.this);
