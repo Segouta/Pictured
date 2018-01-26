@@ -210,8 +210,8 @@ public class LoginActivity extends BaseActivity implements
                 if (!dataSnapshot.child("users").child(user.getUid()).exists()) {
                     ArrayList<Integer> pointsHistoryList = new ArrayList<Integer>();
                     pointsHistoryList.add(giftPoints);
-                    UserData data = new UserData(user.getDisplayName(), user.getEmail(), Calendar.getInstance().getTime(), 0, pointsHistoryList);
-
+                    UserData data = new UserData(user.getDisplayName(), user.getEmail(), Calendar.getInstance().getTime(), 0, pointsHistoryList, "unopened", null);
+                    Log.d("class", data.toString());
                     // store UserData object in Firebase
                     mDatabase.child("users").child(user.getUid()).setValue(data);
                     toaster("Welcome, " + GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getGivenName());

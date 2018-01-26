@@ -13,5 +13,6 @@
     <color name="found_trans">#6409ab00</color>
     <color name="failed_trans">#64c40000</color>
     <color name="notification">#ff5900</color>
+    <color name="neutral">#ffffff</color>
 
 </resources>
