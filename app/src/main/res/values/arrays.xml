@@ -14,4 +14,17 @@
         <item>Be quick, be agile, \nbe (snap)that warrior.</item>
     </string-array>
 
+    <string-array name="wait_messages_found">
+        <item>Thank you for playing! \n A new thing will soon drop!</item>
+        <item>Play along next game!\nThank you for this one!</item>
+        <item>It\'s over for now... \nBut a new thing will drop soon!</item>
+        <item>Well played! Join us\nwhen a new one drops!</item>
+        <item>A new item will be\ndropped every 0.5 - 2 hours!</item>
+        <item>You did it! You will\nbe notified when a new thing drops!</item>
+        <item>This game is over. A new thing\nwill arrive in 30-120 minutes!</item>
+        <item>Thank you for playing!\nKeep up your ranking\nby Snapping quicker then\n others!</item>
+        <item>Thanx for playin\'!\nDid you know your ranking is\ndetermined by your last\nscores?</item>
+        <item>This was a nice one!\nOn to the next one!</item>
+    </string-array>
+
 </resources>

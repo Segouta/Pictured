@@ -57,13 +57,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private ServerManager myServerManager;
 
     private FirebaseAuth mAuth;
-    private String description, thing;
+    private String description, thing, layout;
 
     private Animation fade_in, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show, badge_rotation, box_movement;
 
     private CountdownView acceptTimer, playTimer;
 
-    String[] messagesArray;
+    String[] messagesArray, messagesArrayPositive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +82,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         messagesArray = this.getResources().getStringArray(R.array.wait_messages);
+        messagesArrayPositive = this.getResources().getStringArray(R.array.wait_messages_found);
 
         getWindow().setEnterTransition(new Slide(TOP));
 
@@ -167,6 +168,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void setLayout(String layoutState) {
 //        toaster(layoutState);
+        layout = layoutState;
+        thingText.setTextColor(getResources().getColor(R.color.neutral));
         switch(layoutState) {
             case "unopened":
                 setVisibilities(false, false, true, false, false, false);
@@ -208,9 +211,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 thingText.setText(messagesArray[new Random().nextInt(messagesArray.length)]);
                 thingText.setTextColor(getResources().getColor(R.color.neutral));
                 thingText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+                light.setVisibility(View.INVISIBLE);
                 break;
             case "expired_found":
                 setVisibilities(false, true, false, false, false, false);
+                thingText.setText(messagesArrayPositive[new Random().nextInt(messagesArrayPositive.length)]);
+                thingText.setTextColor(getResources().getColor(R.color.neutral));
+                thingText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
+                light.setVisibility(View.INVISIBLE);
                 break;
         }
     }
@@ -222,7 +230,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private void openBox() {
         storeLayout("opened");
         setLayout("opened");
-        acceptTimer.stop();
+//        acceptTimer.stop();
         makeBoxInvisible();
 
         thingText.setText(thing);
@@ -253,9 +261,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openingTimeExpired() {
+        if (layout.equals("found")) {
+            toaster("expired maar wel gevonden");
+        } else {
+            toaster("expired en niet gevonden");
+        }
         storeLayout("expired");
         setLayout("expired");
-        toaster("opening time expired?");
         makeBoxInvisible();
         showThingText();
     }
