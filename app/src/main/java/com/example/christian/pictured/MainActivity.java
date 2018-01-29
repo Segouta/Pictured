@@ -2,6 +2,7 @@ package com.example.christian.pictured;
 
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 
 import android.graphics.Bitmap;
@@ -11,6 +12,9 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkRequest;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ImageView user, play, social, settings;
     private TextView username;
 
+    private boolean isInFront;
+
     UserActivity userActivity = new UserActivity();
 
     GoogleSignInAccount googleAccount;
@@ -88,6 +94,52 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
 
+//        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+//
+//        if (cm.getActiveNetworkInfo() == null) {
+//            toaster("geen internet moan");
+//        } else {
+//            toaster("wel internet moan");
+//        }
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkRequest.Builder builder = new NetworkRequest.Builder();
+
+        isInFront = true;
+
+        connectivityManager.registerNetworkCallback(
+            builder.build(),
+            new ConnectivityManager.NetworkCallback() {
+
+                @Override
+                public void onAvailable(Network network) {
+//                    toaster("hoi");
+                    if(isInFront) {
+                        toaster("hoi wifi in main");
+                    } else {
+                        toaster("hoi wifi ergens anders");
+                    }
+//                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                }
+
+                @Override
+                public void onLost(Network network) {
+                    if(isInFront) {
+                        toaster("doei wifi in main");
+                    } else {
+                        toaster("doei wifi ergens anders");
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        startActivity(intent);
+                        finishAffinity();
+                    }
+                }
+            }
+        );
+
+
+
         subscribeToPushService();
 //        FirebaseMessaging.getInstance().subscribeToTopic("thing-updates");
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
@@ -118,7 +170,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
 
-//        TODO:load plaatje hier alvast, zodat overgang soepeler
     }
 
     private void subscribeToPushService() {
@@ -141,9 +192,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        isInFront = true;
+        toaster("true");
     }
 
-//    TODO: Deze hele class moet eruit gekickt. Maar moet ik een async maken per class? Want bij playactivity ook sloom.
+    @Override
+    public void onPause() {
+        super.onPause();
+        isInFront = false;
+        toaster("false");
+    }
 
     private void setListener() {
 

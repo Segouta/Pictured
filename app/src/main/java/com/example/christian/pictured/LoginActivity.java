@@ -158,33 +158,33 @@ public class LoginActivity extends BaseActivity implements
     }
     // [END signin]
 
-    private void signOut() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google sign out
-        mGoogleSignInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
-
-    private void revokeAccess() {
-        // Firebase sign out
-        mAuth.signOut();
-
-        // Google revoke access
-        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        updateUI(null);
-                    }
-                });
-    }
+//    private void signOut() {
+//        // Firebase sign out
+//        mAuth.signOut();
+//
+//        // Google sign out
+//        mGoogleSignInClient.signOut().addOnCompleteListener(this,
+//                new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        updateUI(null);
+//                    }
+//                });
+//    }
+//
+//    private void revokeAccess() {
+//        // Firebase sign out
+//        mAuth.signOut();
+//
+//        // Google revoke access
+//        mGoogleSignInClient.revokeAccess().addOnCompleteListener(this,
+//                new OnCompleteListener<Void>() {
+//                    @Override
+//                    public void onComplete(@NonNull Task<Void> task) {
+//                        updateUI(null);
+//                    }
+//                });
+//    }
 
     private void updateUI(FirebaseUser user) {
         hideProgressDialog();
@@ -202,19 +202,25 @@ public class LoginActivity extends BaseActivity implements
     public void addUserToDb() {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        final int giftPoints = 10;
 
         ValueEventListener postListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // Get Post object and use the values to update the UI
                 if (!dataSnapshot.child("users").child(user.getUid()).exists()) {
-                    ArrayList<Integer> pointsHistoryList = new ArrayList<Integer>();
-                    pointsHistoryList.add(giftPoints);
-                    UserData data = new UserData(user.getDisplayName(), user.getEmail(), Calendar.getInstance().getTime(), 0, pointsHistoryList, "unopened", null);
+                    ArrayList<Long> lastGames = new ArrayList<Long>();
+                    lastGames.add((long) 0);
+                    UserData data = new UserData(user.getDisplayName(), user.getEmail(), Calendar.getInstance().getTime(), 0, lastGames);
                     Log.d("class", data.toString());
                     // store UserData object in Firebase
                     mDatabase.child("users").child(user.getUid()).setValue(data);
+                    DatabaseReference subData = mDatabase.child("users").child(user.getUid());
+                    subData.child("gameData").child("lastOpenedGameEndTime").setValue(0);
+                    subData.child("gameData").child("layout").setValue("unopened");
+                    subData.child("gameData").child("openingTime").setValue(0);
+                    subData.child("gameData").child("scoreTime").setValue(0);
+                    subData.child("gameData").child("thingFoundTime").setValue(0);
+
                     toaster("Welcome, " + GoogleSignIn.getLastSignedInAccount(getApplicationContext()).getGivenName());
                 }
             }

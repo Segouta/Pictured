@@ -41,6 +41,7 @@ import static android.view.Gravity.TOP;
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
 
     static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int MAX_HISTORY_LENGTH = 20;
 
     DatabaseReference mDatabase;
 
@@ -58,6 +59,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private FirebaseAuth mAuth;
     private String description, thing, layout;
+    private Long openingTime, pausedTime, scoreTime;
+
+    private ArrayList<Long> lastGames;
+
+    private Integer gamesAmount;
 
     private Animation fade_in, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show, badge_rotation, box_movement;
 
@@ -70,8 +76,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
-        // TODO: hier moet ik dus dat woord ophalen... hoe?
-//        setLayout();
         initAnimations();
         initViews();
 
@@ -132,6 +136,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         playTimer = findViewById(R.id.countupView);
         thingText = findViewById(R.id.thingText);
         openCameraButton = findViewById(R.id.openCameraButton);
+        setVisibilities(false, false, false, false, false, false);
     }
 
     private void initAnimations() {
@@ -156,31 +161,35 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         playTimer.setVisibility((playCounter ? View.VISIBLE : View.INVISIBLE));
         snapTime.setVisibility((playCounter ? View.VISIBLE : View.INVISIBLE));
         snapImage.setVisibility((image ? View.VISIBLE : View.INVISIBLE));
+        if (!white) {
+            light.clearAnimation();
+        }
     }
 
-    public void compareMillis(Long userEndMillis, Long endMillis) {
-        if (!Objects.equals(userEndMillis, endMillis)) {
-            storeLayout("unopened");
-            mDatabase.child("users").child(mAuth.getUid()).child("lastGame").setValue(endMillis);
-            setLayout("unopened");
+    public void setTimeState(Long userEndMillis, Long endMillis, Long openingTimeFromDB, Long scoreTimeFromDB, Integer gamesAmountFromDB, ArrayList<Long> lastGamesList) {
+        lastGames = lastGamesList;
+        gamesAmount = gamesAmountFromDB;
+        scoreTime = scoreTimeFromDB;
+        openingTime = openingTimeFromDB;
+        if (scoreTime > 0){
+            // dus hij is wel geopend iig
+            playTimer.stop();
+            playTimer.updateShow(scoreTime);
         }
     }
 
     public void setLayout(String layoutState) {
-//        toaster(layoutState);
         layout = layoutState;
         thingText.setTextColor(getResources().getColor(R.color.neutral));
         switch(layoutState) {
             case "unopened":
-                setVisibilities(false, false, true, false, false, false);
+                setVisibilities(false, false, true, true, false, false);
+                mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("openingTime").setValue(0);
+                mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("scoreTime").setValue(0);
                 stripes.setAnimation(rotate_right);
                 badge.setAnimation(badge_rotation);
                 box.setAnimation(box_movement);
                 light.setAnimation(fade_in);
-                if (acceptTimer.getRemainTime() == 0) {
-                    storeLayout("expired");
-                    setLayout("expired");
-                }
                 break;
             case "opened":
                 setVisibilities(true, true, false, false, true, false);
@@ -190,9 +199,14 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case "attempted":
                 setVisibilities(true, true, false, false, true, true);
+                openCameraButton.setAnimation(rotate_camera);
+                cameraButtonLayout.setAnimation(fly_in);
+                timerLayout.setAnimation(fade);
                 thingText.setTextColor(getResources().getColor(R.color.failed));
                 snapImage.setColorFilter(getResources().getColor(R.color.failed_trans));
-                playTimer.start(playTimer.getRemainTime());
+                if (pausedTime != null) {
+                    playTimer.start(playTimer.getRemainTime() - new Date().getTime() + pausedTime);
+                }
                 break;
             case "found":
                 setVisibilities(false, true, false, false, true, true);
@@ -201,42 +215,46 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 openCameraButton.clearAnimation();
                 cameraButtonLayout.clearAnimation();
                 cameraButtonLayout.setVisibility(View.INVISIBLE);
+                timerLayout.setAnimation(fade);
                 thingText.setTextColor(getResources().getColor(R.color.found));
                 snapImage.setColorFilter(getResources().getColor(R.color.found_trans));
-
+                playTimer.stop();
+                playTimer.updateShow(scoreTime);
                 snapTime.setText("Snapped in: ");
                 break;
             case "expired":
+                toaster("here?");
                 setVisibilities(false, true, false, false, false, false);
+                cameraButtonLayout.clearAnimation();
                 thingText.setText(messagesArray[new Random().nextInt(messagesArray.length)]);
                 thingText.setTextColor(getResources().getColor(R.color.neutral));
                 thingText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
-                light.setVisibility(View.INVISIBLE);
                 break;
             case "expired_found":
                 setVisibilities(false, true, false, false, false, false);
                 thingText.setText(messagesArrayPositive[new Random().nextInt(messagesArrayPositive.length)]);
                 thingText.setTextColor(getResources().getColor(R.color.neutral));
                 thingText.setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f);
-                light.setVisibility(View.INVISIBLE);
                 break;
         }
     }
 
-    private void storeLayout(String toStore) {
-        mDatabase.child("users").child(mAuth.getUid()).child("layout").setValue(toStore);
+    public void storeLayout(String toStore) {
+        mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("layout").setValue(toStore);
     }
 
     private void openBox() {
         storeLayout("opened");
         setLayout("opened");
+        openingTime = new Date().getTime();
+        mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("openingTime").setValue(openingTime);
+
+
 //        acceptTimer.stop();
         makeBoxInvisible();
 
         thingText.setText(thing);
         showThingText();
-
-//        playTimer.start(60*1000);
     }
 
     public void setThing(String thingFromFirebase, Long endMillis) {
@@ -244,7 +262,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         thingText.setText(thing);
         playTimer.start(endMillis - new Date().getTime());
         acceptTimer.start(endMillis - new Date().getTime());
-//        toaster(thing + endMillis.toString());
     }
 
     private void showThingText() {
@@ -261,14 +278,18 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openingTimeExpired() {
-        if (layout.equals("found")) {
-            toaster("expired maar wel gevonden");
-        } else {
-            toaster("expired en niet gevonden");
+        if(layout.equals("unopened")){
+            makeBoxInvisible();
         }
-        storeLayout("expired");
-        setLayout("expired");
-        makeBoxInvisible();
+        if (layout.equals("found")) {
+            toaster("Time's up! Good job, you did it!");
+            storeLayout("expired_found");
+            setLayout("expired_found");
+        } else {
+            toaster("time expired, you did not find the thing!");
+            storeLayout("expired");
+            setLayout("expired");
+        }
         showThingText();
     }
 
@@ -288,7 +309,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setLastImageThumbnail();
         openCameraButton.setAnimation(rotate_camera);
-
     }
 
     private void setLastImageThumbnail() {
@@ -296,7 +316,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void visionCheckDone(String desc, ArrayList<String> tags) {
-        toaster("Our best guess: " + desc + ".");
         description = desc;
         progressDialog.dismiss();
         snapImage.setVisibility(View.VISIBLE);
@@ -306,16 +325,31 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void compareVisionAndObject(ArrayList<String> tags) {
         if (tags.contains(thing)) {
-            mDatabase.child("users").child(mAuth.getUid()).child("history").setValue(1);
-            mDatabase.child("users").child(mAuth.getUid()).child("gamesAmount").setValue(1);
+            mDatabase.child("users").child(mAuth.getUid()).child("gamesAmount").setValue(gamesAmount + 1);
+            mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("thingFoundTime").setValue(new Date().getTime());
+            scoreTime = new Date().getTime() - openingTime;
+            addToLastGames(scoreTime);
+            mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("scoreTime").setValue(scoreTime);
+            mDatabase.child("currentScores").child(scoreTime.toString()).setValue(mAuth.getUid());
             storeLayout("found");
             setLayout("found");
             toaster("Yeah, that is a " + thing + "!");
+
         } else {
             storeLayout("attempted");
             setLayout("attempted");
             toaster("We did not find a " + thing + " in this image... Try again!");
         }
+    }
+
+    private void addToLastGames(long scoreTime) {
+
+        lastGames.add(scoreTime);
+
+        if (lastGames.size() > MAX_HISTORY_LENGTH) {
+            lastGames = new ArrayList<Long>(lastGames.subList(lastGames.size() - 10, lastGames.size()));
+        }
+        mDatabase.child("users").child(mAuth.getUid()).child("lastGames").setValue(lastGames);
     }
 
     public void toaster(String message) {
@@ -337,6 +371,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
 
             playTimer.pause();
+            pausedTime = new Date().getTime();
 
             progressDialog = new ProgressDialog(PlayActivity.this);
             progressDialog.setMessage("Analyzing dat snap...");

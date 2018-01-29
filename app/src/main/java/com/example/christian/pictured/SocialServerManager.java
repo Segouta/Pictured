@@ -14,18 +14,19 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import static com.android.volley.VolleyLog.TAG;
 
-public class UserServerManager implements ValueEventListener{
+public class SocialServerManager implements ValueEventListener{
 
     private DatabaseReference mDatabase;
-    private PlayActivity parent;
+    private SocialActivity parent;
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    public UserServerManager(PlayActivity parent, DatabaseReference mDatabase)
+    public SocialServerManager(SocialActivity parent, DatabaseReference mDatabase)
     {
         this.mDatabase = mDatabase;
         this.parent = parent;
@@ -38,24 +39,9 @@ public class UserServerManager implements ValueEventListener{
 
         Integer gamesAmount = dataSnapshot.child("users").child(mAuth.getUid()).child("gamesAmount").getValue(Integer.class);
         Long scoreTime = subData.child("scoreTime").getValue(Long.class);
-        Long openingTime = subData.child("openingTime").getValue(Long.class);
-        Long userEndMillis = subData.child("lastOpenedGameEndTime").getValue(Long.class);
-        Long endMillis = dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class);
-        ArrayList<Long> lastGamesList = dataSnapshot.child("users").child(mAuth.getUid()).getValue(UserData.class).lastGames;
+        UserData data = dataSnapshot.child("users").child(mAuth.getUid()).getValue(UserData.class);
 
-
-        parent.setTimeState(userEndMillis, endMillis, openingTime, scoreTime, gamesAmount, lastGamesList);
-
-        if (!Objects.equals(userEndMillis, endMillis)) {
-            parent.storeLayout("unopened");
-            parent.setLayout("unopened");
-            mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("lastOpenedGameEndTime").setValue(endMillis);
-        } else if (endMillis <= new Date().getTime()) {
-            parent.storeLayout("expired");
-            parent.setLayout("expired");
-        } else {
-            parent.setLayout(subData.child("layout").getValue(String.class));
-        }
+        parent.setData(gamesAmount, scoreTime, data.lastGames);
     }
 
     @Override

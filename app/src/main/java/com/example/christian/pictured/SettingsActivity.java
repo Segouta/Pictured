@@ -29,10 +29,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_settings);
 
         back = findViewById(R.id.backButton);
-        notification = findViewById(R.id.notification);
 
         back.setOnClickListener(this);
-        notification.setOnClickListener(this);
 
         getWindow().setEnterTransition(new Slide(BOTTOM));
     }
