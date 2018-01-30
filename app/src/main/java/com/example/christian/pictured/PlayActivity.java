@@ -1,8 +1,6 @@
 package com.example.christian.pictured;
 
-import android.app.ActivityManager;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -17,61 +15,49 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import android.Manifest;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
 import java.util.Random;
-
 import cn.iwgang.countdownview.CountdownView;
 
 import static android.view.Gravity.TOP;
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener, TestInterface {
-
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener, WifiCheckInterface {
 
     public static MainActivity delegate = null;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int MAX_HISTORY_LENGTH = 10;
 
-    DatabaseReference mDatabase;
+    private DatabaseReference mDatabase, userDatabase;
+    private FirebaseAuth mAuth;
 
-    private TextView thingText, tagText, descText, snapTime;
-    private Button processButton;
+    private TextView thingText, snapTime;
     private ImageView snapImage, back, stripes, badge, light, openCameraButton;
     private RelativeLayout boxLayout, box;
     private ConstraintLayout cameraButtonLayout, timerLayout;
     private ProgressDialog progressDialog;
+    private CountdownView acceptTimer, playTimer;
+
+    private Animation fade_in, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show, badge_rotation, box_movement;
 
     private CameraManager myCameraManager;
     private MSVisionManager myMSVisionManager;
     private UserServerManager myUserServerManager;
     private ServerManager myServerManager;
 
-    private FirebaseAuth mAuth;
     private String description, thing, layout;
     private Long openingTime, pausedTime, scoreTime;
-
     private ArrayList<Long> lastGames;
-
     private Integer gamesAmount;
-
-    private Animation fade_in, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show, badge_rotation, box_movement;
-
-    private CountdownView acceptTimer, playTimer;
-
-    String[] messagesArray, messagesArrayPositive;
+    private String[] messagesArray, messagesArrayPositive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +66,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         MainActivity.delegate = this;
 
+        getWindow().setEnterTransition(new Slide(TOP));
         initAnimations();
         initViews();
 
@@ -92,19 +79,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         messagesArray = this.getResources().getStringArray(R.array.wait_messages);
         messagesArrayPositive = this.getResources().getStringArray(R.array.wait_messages_found);
 
-        getWindow().setEnterTransition(new Slide(TOP));
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
-
         mAuth = FirebaseAuth.getInstance();
-
-        back.setOnClickListener(this);
+        userDatabase = mDatabase.child("users").child(mAuth.getUid());
 
         myCameraManager = new CameraManager(this);
         myServerManager = new ServerManager(this, mDatabase);
         myUserServerManager = new UserServerManager(this, mDatabase);
         myMSVisionManager = new MSVisionManager(this, myCameraManager);
 
+        back.setOnClickListener(this);
         openCameraButton.setOnClickListener(this);
         box.setOnClickListener(this);
         snapImage.setOnClickListener(this);
@@ -115,12 +99,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onEnd(CountdownView cv) {
                 openingTimeExpired();
-            }
-        });
-        playTimer.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
-            @Override
-            public void onEnd(CountdownView cv) {
-                playTimeExpired();
             }
         });
     }
@@ -193,8 +171,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         switch(layoutState) {
             case "unopened":
                 setVisibilities(false, false, true, true, false, false);
-                mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("openingTime").setValue(0);
-                mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("scoreTime").setValue(0);
+                userDatabase.child("gameData").child("openingTime").setValue(0);
+                userDatabase.child("gameData").child("scoreTime").setValue(0);
                 stripes.setAnimation(rotate_right);
                 badge.setAnimation(badge_rotation);
                 box.setAnimation(box_movement);
@@ -219,8 +197,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case "found":
                 setVisibilities(false, true, false, false, true, true);
-                //            Long scoreTime = startTime - playTimer.getRemainTime();
-//            playTimer.updateShow(scoreTime);
                 openCameraButton.clearAnimation();
                 cameraButtonLayout.clearAnimation();
                 cameraButtonLayout.setVisibility(View.INVISIBLE);
@@ -248,17 +224,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void storeLayout(String toStore) {
-        mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("layout").setValue(toStore);
+        userDatabase.child("gameData").child("layout").setValue(toStore);
     }
 
     private void openBox() {
         storeLayout("opened");
         setLayout("opened");
         openingTime = new Date().getTime();
-        mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("openingTime").setValue(openingTime);
+        userDatabase.child("gameData").child("openingTime").setValue(openingTime);
 
-
-//        acceptTimer.stop();
         makeBoxInvisible();
 
         thingText.setText(thing);
@@ -301,11 +275,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         showThingText();
     }
 
-    private void playTimeExpired() {
-        storeLayout("expired");
-        toaster("play time over bitch");
-    }
-
     protected void onResume() {
         super.onResume();
         View decorView = getWindow().getDecorView();
@@ -333,15 +302,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     public void compareVisionAndObject(ArrayList<String> tags) {
         if (tags.contains(thing)) {
-            mDatabase.child("users").child(mAuth.getUid()).child("gamesAmount").setValue(gamesAmount + 1);
-            mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("thingFoundTime").setValue(new Date().getTime());
             scoreTime = new Date().getTime() - openingTime;
             addToLastGames(scoreTime);
-            mDatabase.child("users").child(mAuth.getUid()).child("gameData").child("scoreTime").setValue(scoreTime);
+
+            userDatabase.child("gamesAmount").setValue(gamesAmount + 1);
+            userDatabase.child("gameData").child("thingFoundTime").setValue(new Date().getTime());
+            userDatabase.child("gameData").child("scoreTime").setValue(scoreTime);
             mDatabase.child("currentScores").child(scoreTime.toString()).setValue(mAuth.getUid());
             storeLayout("found");
             setLayout("found");
-            toaster("Yeah, that is a " + thing + "!");
+            toaster("Yeah, that is: \"" + thing + "\"");
 
         } else {
             storeLayout("attempted");
@@ -352,13 +322,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addToLastGames(long scoreTime) {
 
-        if (lastGames.size() == 1 && lastGames.get(0) == 0)
+        if (lastGames.size() == 1 && lastGames.get(0) == 0) {
             lastGames.set(0, scoreTime);
-        else if (lastGames.size() > MAX_HISTORY_LENGTH) {
+        }
+        else if (lastGames.size() > MAX_HISTORY_LENGTH - 1) {
             lastGames.add(scoreTime);
             lastGames = new ArrayList<Long>(lastGames.subList(lastGames.size() - MAX_HISTORY_LENGTH, lastGames.size()));
+        } else {
+            lastGames.add(scoreTime);
         }
-        mDatabase.child("users").child(mAuth.getUid()).child("lastGames").setValue(lastGames);
+        userDatabase.child("lastGames").setValue(lastGames);
     }
 
     public void toaster(String message) {
@@ -383,7 +356,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             pausedTime = new Date().getTime();
 
             progressDialog = new ProgressDialog(PlayActivity.this);
-            progressDialog.setMessage("Analyzing dat snap...");
+            progressDialog.setMessage("Analyzing your snap...");
             progressDialog.show();
             myMSVisionManager.startVisionCheck();
 
@@ -408,6 +381,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             if (description != null) {
                 toaster("Our best guess: " + description + ".");
             }
+            addToLastGames(10000);
         }
     }
 

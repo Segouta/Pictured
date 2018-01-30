@@ -1,31 +1,17 @@
 package com.example.christian.pictured;
 
-
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.ColorMatrix;
-import android.graphics.ColorMatrixColorFilter;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
 import android.net.NetworkRequest;
-import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.transition.ChangeBounds;
-import android.transition.Explode;
-import android.transition.Fade;
-import android.transition.Slide;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -33,9 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -43,40 +26,32 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.InputStream;
-import java.net.URL;
-
-import static android.view.Gravity.BOTTOM;
-import static android.view.Gravity.END;
-import static android.view.Gravity.TOP;
-
 // Key 1: 364da92137ce4d0d99397ae2b2c5a29b
 // Key 2: fa76fa5671624f87b26cc8e3f61148a7
 // Endpoint: https://westcentralus.api.cognitive.microsoft.com/vision/v1.0
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
-    public static TestInterface delegate = null;
+    public static WifiCheckInterface delegate = null;
+
+    private DatabaseReference mDatabase;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private GoogleSignInAccount googleAccount;
+    private ConnectivityManager connectivityManager;
+    private NetworkRequest.Builder builder;
 
     private ImageView user, play, social, settings;
     private TextView username, playText, socialText;
 
+    private UserActivity userActivity = new UserActivity();
+
     private boolean isInFront, buttonsUsable;
-
-    ConnectivityManager connectivityManager;
-    NetworkRequest.Builder builder;
-
-    UserActivity userActivity = new UserActivity();
-
-    GoogleSignInAccount googleAccount;
-
-    DatabaseReference mDatabase;
-
-    private FirebaseAuth.AuthStateListener mAuthListener;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -86,10 +61,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buttonsUsable = true;
 
         subscribeToPushService();
-
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
-
         setListener();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         username = findViewById(R.id.user_title);
         playText = findViewById(R.id.play_title);
@@ -105,19 +78,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         social.setOnClickListener(this);
         settings.setOnClickListener(this);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-
         googleAccount = GoogleSignIn.getLastSignedInAccount(this);
 
         if (googleAccount != null) {
             username.setText(googleAccount.getGivenName());
         }
 
-//        new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
-
         checkConnectionOnce();
         setConnectionListener();
-
     }
 
     private void checkConnectionOnce() {
@@ -142,22 +110,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     @Override
                     public void onAvailable(Network network) {
                         new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
-                        if(isInFront) {
-                            buttonsUsable(true);
-                        } else {
-                            buttonsUsable(true);
-                        }
+                        buttonsUsable(true);
                     }
 
                     @Override
                     public void onLost(Network network) {
-                        if(isInFront) {
-                            buttonsUsable(false);
-                        } else {
-                            buttonsUsable(false);
-//                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                            startActivity(intent);
-
+                        buttonsUsable(false);
+                        if (!isInFront) {
                             delegate.closeActivity();
                         }
                     }
@@ -179,7 +138,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void subscribeToPushService() {
         FirebaseMessaging.getInstance().subscribeToTopic("news");
-        String token = FirebaseInstanceId.getInstance().getToken();
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -202,7 +160,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setListener() {
-
         // initialize auth listener
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -215,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     username.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 }
                 else {
-                    // user is not logged in and redirected to splash page
+                    // user is not logged in and redirected to login page
                     toaster("You are logged out.");
                     userActivity.signOut();
                     userActivity.goToLoginActivity();
@@ -229,28 +186,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
+    public void startActivityWithAnimation(View v, Class toStart) {
+        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+        startActivity(new Intent(MainActivity.this, toStart),
+                ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+    }
+
     @Override
     public void onClick(View v) {
         if (v.equals(user)) {
-            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
-            startActivity(new Intent(MainActivity.this, UserActivity.class),
-                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            startActivityWithAnimation(v, UserActivity.class);
         } else if (v.equals(settings)) {
-            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
-            startActivity(new Intent(MainActivity.this, SettingsActivity.class),
-                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            startActivityWithAnimation(v, SettingsActivity.class);
         } else if (buttonsUsable){
             if (v.equals(play)) {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
-                startActivity(new Intent(MainActivity.this, PlayActivity.class),
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                startActivityWithAnimation(v, PlayActivity.class);
             }
             else if (v.equals(social)) {
-                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
-                startActivity(new Intent(MainActivity.this, SocialActivity.class),
-                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+                startActivityWithAnimation(v, SocialActivity.class);
             }
-
         } else {
             toaster("Sorry, there is no internet connection.");
         }

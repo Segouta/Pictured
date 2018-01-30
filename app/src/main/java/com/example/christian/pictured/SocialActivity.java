@@ -1,35 +1,25 @@
 package com.example.christian.pictured;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.transition.Slide;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Locale;
 
 import static android.view.Gravity.BOTTOM;
 
-public class SocialActivity extends FragmentActivity implements View.OnClickListener, TestInterface {
+public class SocialActivity extends FragmentActivity implements View.OnClickListener, WifiCheckInterface {
 
     private ImageView back, share, info;
 
@@ -37,7 +27,7 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
 
     private String streakToDisplay;
 
-    static final int MAX_HISTORY_LENGTH = 20;
+    static final int MAX_HISTORY_LENGTH = 10;
 
     private DatabaseReference mDatabase;
 
