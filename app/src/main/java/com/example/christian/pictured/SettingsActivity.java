@@ -21,8 +21,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
     private ImageView back;
 
-    Button notification;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

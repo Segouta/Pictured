@@ -20,17 +20,6 @@
         app:layout_constraintTop_toTopOf="parent"
         android:src="@drawable/back" />
 
-    <android.support.v4.view.ViewPager
-        android:id="@+id/pager"
-        android:layout_width="273dp"
-        android:layout_height="1dp"
-        android:layout_marginBottom="30dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <ImageView
         android:id="@+id/shareButton"
         android:layout_width="70dp"

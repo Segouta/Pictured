@@ -56,6 +56,8 @@ import static android.view.Gravity.TOP;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
+    public static TestInterface delegate = null;
+
     private ImageView user, play, social, settings;
     private TextView username, playText, socialText;
 
@@ -75,24 +77,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        if (getIntent().getExtras() != null) {
-
-            startActivity(new Intent(this, PlayActivity.class));
-            for (String key : getIntent().getExtras().keySet()) {
-                String value = getIntent().getExtras().getString(key);
-
-                if (key.equals("PlayActivity") && value.equals("True")) {
-                    Intent intent = new Intent(this, PlayActivity.class);
-                    intent.putExtra("value", value);
-                    startActivity(intent);
-                    finish();
-                }
-
-                //TODO: Hier moet hij meteen naar de playactivity gaan.
-
-            }
-        }
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
@@ -171,10 +155,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             buttonsUsable(false);
                         } else {
                             buttonsUsable(false);
-                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                            startActivity(intent);
+//                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+//                            startActivity(intent);
 
-                            //TODO: hier moet alles gesloten worden want dit werkt zo niet.
+                            delegate.closeActivity();
                         }
                     }
                 }
@@ -226,7 +210,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 FirebaseUser user = firebaseAuth.getCurrentUser();
 
                 if (user != null) {
-                    // User is signed in, everything alright
+                    // is signed in, everything alright
                     toaster("Still logged in");
                     username.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
                 }

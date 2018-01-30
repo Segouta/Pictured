@@ -38,10 +38,12 @@ import cn.iwgang.countdownview.CountdownView;
 
 import static android.view.Gravity.TOP;
 
-public class PlayActivity extends AppCompatActivity implements View.OnClickListener {
+public class PlayActivity extends AppCompatActivity implements View.OnClickListener, TestInterface {
 
+
+    public static MainActivity delegate = null;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int MAX_HISTORY_LENGTH = 20;
+    static final int MAX_HISTORY_LENGTH = 10;
 
     DatabaseReference mDatabase;
 
@@ -75,6 +77,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        MainActivity.delegate = this;
 
         initAnimations();
         initViews();
@@ -119,6 +123,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 playTimeExpired();
             }
         });
+    }
+
+    @Override
+    public void closeActivity() {
+        finish();
     }
 
     private void initViews() {
@@ -166,7 +175,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void setTimeState(Long userEndMillis, Long endMillis, Long openingTimeFromDB, Long scoreTimeFromDB, Integer gamesAmountFromDB, ArrayList<Long> lastGamesList) {
+    public void setTimeState(Long openingTimeFromDB, Long scoreTimeFromDB, Integer gamesAmountFromDB, ArrayList<Long> lastGamesList) {
         lastGames = lastGamesList;
         gamesAmount = gamesAmountFromDB;
         scoreTime = scoreTimeFromDB;
@@ -223,7 +232,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 snapTime.setText("Snapped in: ");
                 break;
             case "expired":
-                toaster("here?");
                 setVisibilities(false, true, false, false, false, false);
                 cameraButtonLayout.clearAnimation();
                 thingText.setText(messagesArray[new Random().nextInt(messagesArray.length)]);
@@ -344,10 +352,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     private void addToLastGames(long scoreTime) {
 
-        lastGames.add(scoreTime);
-
-        if (lastGames.size() > MAX_HISTORY_LENGTH) {
-            lastGames = new ArrayList<Long>(lastGames.subList(lastGames.size() - 10, lastGames.size()));
+        if (lastGames.size() == 1 && lastGames.get(0) == 0)
+            lastGames.set(0, scoreTime);
+        else if (lastGames.size() > MAX_HISTORY_LENGTH) {
+            lastGames.add(scoreTime);
+            lastGames = new ArrayList<Long>(lastGames.subList(lastGames.size() - MAX_HISTORY_LENGTH, lastGames.size()));
         }
         mDatabase.child("users").child(mAuth.getUid()).child("lastGames").setValue(lastGames);
     }

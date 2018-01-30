@@ -44,7 +44,7 @@ public class UserServerManager implements ValueEventListener{
         ArrayList<Long> lastGamesList = dataSnapshot.child("users").child(mAuth.getUid()).getValue(UserData.class).lastGames;
 
 
-        parent.setTimeState(userEndMillis, endMillis, openingTime, scoreTime, gamesAmount, lastGamesList);
+        parent.setTimeState(openingTime, scoreTime, gamesAmount, lastGamesList);
 
         if (!Objects.equals(userEndMillis, endMillis)) {
             parent.storeLayout("unopened");
