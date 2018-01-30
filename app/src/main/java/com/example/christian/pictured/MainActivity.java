@@ -14,6 +14,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -56,9 +57,12 @@ import static android.view.Gravity.TOP;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private ImageView user, play, social, settings;
-    private TextView username;
+    private TextView username, playText, socialText;
 
-    private boolean isInFront;
+    private boolean isInFront, buttonsUsable;
+
+    ConnectivityManager connectivityManager;
+    NetworkRequest.Builder builder;
 
     UserActivity userActivity = new UserActivity();
 
@@ -71,84 +75,41 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-// If a notification message is tapped, any data accompanying the notification
-        // message is available in the intent extras. In this project the launcher
-        // intent is fired when the notification is tapped, so any accompanying data would
-        // be handled here. If you want a different intent fired, set the click_action
-        // field of the notification message to the desired intent. The launcher intent
-        // is used when no click_action is specified.
-        //
-        // Handle possible data accompanying notification message.
+
         if (getIntent().getExtras() != null) {
 
+            startActivity(new Intent(this, PlayActivity.class));
             for (String key : getIntent().getExtras().keySet()) {
                 String value = getIntent().getExtras().getString(key);
 
-                if (key.equals("AnotherActivity") && value.equals("True")) {
+                if (key.equals("PlayActivity") && value.equals("True")) {
                     Intent intent = new Intent(this, PlayActivity.class);
                     intent.putExtra("value", value);
                     startActivity(intent);
                     finish();
                 }
 
+                //TODO: Hier moet hij meteen naar de playactivity gaan.
+
             }
         }
 
-//        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-//
-//        if (cm.getActiveNetworkInfo() == null) {
-//            toaster("geen internet moan");
-//        } else {
-//            toaster("wel internet moan");
-//        }
+        connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        NetworkRequest.Builder builder = new NetworkRequest.Builder();
+        builder = new NetworkRequest.Builder();
 
         isInFront = true;
-
-        connectivityManager.registerNetworkCallback(
-            builder.build(),
-            new ConnectivityManager.NetworkCallback() {
-
-                @Override
-                public void onAvailable(Network network) {
-//                    toaster("hoi");
-                    if(isInFront) {
-                        toaster("hoi wifi in main");
-                    } else {
-                        toaster("hoi wifi ergens anders");
-                    }
-//                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                }
-
-                @Override
-                public void onLost(Network network) {
-                    if(isInFront) {
-                        toaster("doei wifi in main");
-                    } else {
-                        toaster("doei wifi ergens anders");
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                        startActivity(intent);
-                        finishAffinity();
-                    }
-                }
-            }
-        );
-
-
+        buttonsUsable = true;
 
         subscribeToPushService();
-//        FirebaseMessaging.getInstance().subscribeToTopic("thing-updates");
-        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
-//        TODO: probleem is als je uitlogt vanuit useractivity gaat dat hij weer in main komt.
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
 
         setListener();
 
         username = findViewById(R.id.user_title);
+        playText = findViewById(R.id.play_title);
+        socialText = findViewById(R.id.social_title);
 
         user = findViewById(R.id.user);
         play = findViewById(R.id.snap);
@@ -168,18 +129,73 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             username.setText(googleAccount.getGivenName());
         }
 
-        new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
+//        new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
 
+        checkConnectionOnce();
+        setConnectionListener();
+
+    }
+
+    private void checkConnectionOnce() {
+        if (!isNetworkAvailable()) {
+            buttonsUsable(false);
+            user.setImageResource((R.drawable.account));
+        }
+    }
+
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
+    private void setConnectionListener() {
+        connectivityManager.registerNetworkCallback(
+                builder.build(),
+                new ConnectivityManager.NetworkCallback() {
+
+                    @Override
+                    public void onAvailable(Network network) {
+                        new DownLoadImageTask(user).execute(googleAccount.getPhotoUrl().toString());
+                        if(isInFront) {
+                            buttonsUsable(true);
+                        } else {
+                            buttonsUsable(true);
+                        }
+                    }
+
+                    @Override
+                    public void onLost(Network network) {
+                        if(isInFront) {
+                            buttonsUsable(false);
+                        } else {
+                            buttonsUsable(false);
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            startActivity(intent);
+
+                            //TODO: hier moet alles gesloten worden want dit werkt zo niet.
+                        }
+                    }
+                }
+        );
+    }
+
+    private void buttonsUsable(boolean b) {
+        setAlphas(b ? 255 : 100);
+        buttonsUsable = b;
+    }
+
+    private void setAlphas(int opacity) {
+        play.setImageAlpha(opacity);
+        social.setImageAlpha(opacity);
+        playText.setTextColor(Color.argb(opacity, 255, 255, 255));
+        socialText.setTextColor(Color.argb(opacity, 255, 255, 255));
     }
 
     private void subscribeToPushService() {
         FirebaseMessaging.getInstance().subscribeToTopic("news");
-
-        Toast.makeText(MainActivity.this, "Subscribed", Toast.LENGTH_SHORT).show();
-
         String token = FirebaseInstanceId.getInstance().getToken();
-
-        Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
     }
 
     // onResume callback, used to make the nav bar and status bar disappear
@@ -193,14 +209,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         isInFront = true;
-        toaster("true");
     }
 
     @Override
     public void onPause() {
         super.onPause();
         isInFront = false;
-        toaster("false");
     }
 
     private void setListener() {
@@ -233,22 +247,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
         if (v.equals(user)) {
+            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
             startActivity(new Intent(MainActivity.this, UserActivity.class),
                     ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        }
-        else if (v.equals(play)) {
-            startActivity(new Intent(MainActivity.this, PlayActivity.class),
-                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        }
-        else if (v.equals(social)) {
-            startActivity(new Intent(MainActivity.this, SocialActivity.class),
-                    ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
-        }
-        else if (v.equals(settings)) {
+        } else if (v.equals(settings)) {
+            v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
             startActivity(new Intent(MainActivity.this, SettingsActivity.class),
                     ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        } else if (buttonsUsable){
+            if (v.equals(play)) {
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+                startActivity(new Intent(MainActivity.this, PlayActivity.class),
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            }
+            else if (v.equals(social)) {
+                v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.icon_click));
+                startActivity(new Intent(MainActivity.this, SocialActivity.class),
+                        ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+            }
+
+        } else {
+            toaster("Sorry, there is no internet connection.");
         }
     }
 }

@@ -22,8 +22,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import static android.view.Gravity.TOP;
 
-//TODO: wtf swipeback wil ik...
-
 public class UserActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView back, logOutButton, avatarImage;
