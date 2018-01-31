@@ -112,5 +112,5 @@ A server is written, to release new objects every 30-120 minutes. When this happ
 The idea is that this can be run on any small server that is attached to the internet, such as a Raspberry Pi.
 This is what the server script looks like while executed:
 
-![server preview](server url)
+![server preview](https://github.com/Segouta/Pictured/blob/master/doc/serverpreview.PNG)
 
