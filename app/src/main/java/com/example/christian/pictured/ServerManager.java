@@ -1,7 +1,9 @@
 package com.example.christian.pictured;
 
 /*
- * Created by Christian on 17-1-2018.
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This class manages the items from the Firebase database that are the same for every user.
+ * such as endTime and thing to find.
  */
 
 import android.util.Log;
@@ -19,8 +21,6 @@ public class ServerManager implements ValueEventListener{
     private DatabaseReference mDatabase;
     private PlayActivity parent;
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
     public ServerManager(PlayActivity parent, DatabaseReference mDatabase)
     {
         this.mDatabase = mDatabase;
@@ -30,8 +30,10 @@ public class ServerManager implements ValueEventListener{
 
     @Override
     public void onDataChange(DataSnapshot dataSnapshot) {
+        // Get the index of the current thing.
         Integer index = dataSnapshot.child("currentThing").child("index").getValue(Integer.class);
 
+        // When received, call setThing function in PlayActivity.
         parent.setThing(dataSnapshot.child("things").child(index.toString()).getValue(String.class), dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class));
     }
 

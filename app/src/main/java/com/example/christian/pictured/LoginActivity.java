@@ -89,7 +89,6 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
 
     protected void onResume() {
         super.onResume();
-
         // This code makes the nav bar and status bar disappear.
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE

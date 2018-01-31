@@ -1,5 +1,11 @@
 package com.example.christian.pictured;
 
+/*
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This is the social activity of SnapThat. From here, you can share your SnapStreak, and you can
+ * see how you are doing.
+ */
+
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Build;
@@ -21,25 +27,31 @@ import static android.view.Gravity.BOTTOM;
 
 public class SocialActivity extends FragmentActivity implements View.OnClickListener, WifiCheckInterface {
 
-    private ImageView back, share, info;
-
-    public static MainActivity delegate = null;
-
-    private String streakToDisplay;
-
+    // Setup global variables.
     static final int MAX_HISTORY_LENGTH = 10;
 
-    private DatabaseReference mDatabase;
-
+    // Initialize views.
+    private ImageView back, share, info;
     private TextView snapStreakView, gamesAmountView, lastGameView;
+
+    // Setup connection losing interface.
+    public static MainActivity delegate = null;
+
+    // Setup variables.
+    private String streakToDisplay;
+
+    // Setup database.
+    private DatabaseReference mDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social);
 
+        // Setup connection interface.
         MainActivity.delegate = this;
 
+        // Set views.
         back = findViewById(R.id.backButton);
         share = findViewById(R.id.shareButton);
         info = findViewById(R.id.infoButton);
@@ -47,6 +59,7 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
         gamesAmountView = findViewById(R.id.gameAmountText);
         lastGameView = findViewById(R.id.lastGameScore);
 
+        // TODO: hier verder
         getWindow().setEnterTransition(new Slide(BOTTOM));
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -60,6 +73,7 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void closeActivity() {
+        // This function is called from main activity when internet connection is lost.
         finish();
     }
 
@@ -76,9 +90,13 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
     }
 
     public void setData(Integer gamesAmount, Long scoreTime, ArrayList<Long> lastGames) {
+        // When data needed for this activity is loaded, this method fires.
+        // First calculate scoreTime in seconds and set in textviews.
         float scoreTimeSeconds = ((float) scoreTime)/1000;
         lastGameView.setText(String.valueOf(scoreTimeSeconds));
         gamesAmountView.setText(String.valueOf(gamesAmount));
+
+        // This for loop calculates the average and displays this SnapStreak.
         long sum = 0;
         int amount = 0;
         for(long i : lastGames) {
@@ -90,14 +108,17 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
     }
 
     private void shareSnaps() {
+        // Share your snapstreak with the world via various social media.
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
-        sendIntent.putExtra(Intent.EXTRA_TEXT, "My current SnapStreak is " + streakToDisplay);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey, btw my current SnapStreak is " + streakToDisplay +
+                "!" + " I doubt you can beat me! Download SnapThat, and let us start the battle of the Snaps!");
         sendIntent.setType("text/plain");
         startActivity(sendIntent);
     }
 
     private void showGameInfo() {
+        // When clicking on information, show this information to the user.
         AlertDialog.Builder builder;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
@@ -115,6 +136,7 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        // Start animation when clicking on a clickable item, and do what the button needs to do.
         v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.back_click));
         if (v.equals(back)) {
             this.onBackPressed();

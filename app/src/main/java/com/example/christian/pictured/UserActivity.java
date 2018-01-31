@@ -1,5 +1,10 @@
 package com.example.christian.pictured;
 
+/*
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This is SnapThat's Social server manager. It retrieves the data for the SocialActivity.
+ */
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -12,22 +17,21 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-
 import static android.view.Gravity.TOP;
 
 public class UserActivity extends AppCompatActivity implements View.OnClickListener {
 
+    // Setup views.
     private ImageView back, logOutButton, avatarImage;
-
     private TextView username;
 
+    // Setup Google information.
     GoogleSignInAccount googleAccount;
 
     @Override
@@ -35,29 +39,32 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user);
 
+        // Find views.
         back = findViewById(R.id.backButton);
         logOutButton = findViewById(R.id.logOutButton);
         avatarImage = findViewById(R.id.avatarImage);
-
         username = findViewById(R.id.usernameText);
 
+        // Set OnClickListeners.
         back.setOnClickListener(this);
         logOutButton.setOnClickListener(this);
 
+        // Make sure the transition happens in the correct way.
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.BLACK));
         getWindow().setEnterTransition(new Slide(TOP));
 
+        // Find google account and get first name to display.
         googleAccount = GoogleSignIn.getLastSignedInAccount(this);
-
         if (googleAccount != null) {
             username.setText(googleAccount.getGivenName());
         }
 
+        // Get user avatar from Google.
         new DownLoadImageTask(avatarImage).execute(googleAccount.getPhotoUrl().toString());
     }
 
-    // onResume callback, used to make the nav bar and status bar disappear
     protected void onResume() {
+        // This code makes the nav bar and status bar disappear.
         super.onResume();
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -88,17 +95,19 @@ public class UserActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void goToLoginActivity(){
+        // Goes to the login activity when logged out.
         startActivity(new Intent(UserActivity.this, LoginActivity.class));
         finishAffinity();
     }
 
     public void toaster(String message) {
-        // toasts string
+        // Simple method that simplifies toasting actions.
         Toast.makeText(UserActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onClick(View v) {
+        // When clicked on button, start animation and do what the button needs to do.
         v.startAnimation(AnimationUtils.loadAnimation(this, R.anim.back_click));
         if (v.equals(back)) {
             this.onBackPressed();

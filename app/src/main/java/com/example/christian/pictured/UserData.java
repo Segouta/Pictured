@@ -1,5 +1,10 @@
 package com.example.christian.pictured;
 
+/*
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * UserData contains info about the user to safe into the Firebase database.
+ */
+
 import java.util.ArrayList;
 import java.util.Date;
 
