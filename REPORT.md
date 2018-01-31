@@ -48,7 +48,7 @@ In this activity, players can navigate to the different screens of the app. Ther
 Related classes and notable features:
 
 * UserActivity is called when the authorization has become invalid. It calls the signOut() and goToLoginActivity() from the Useractivity when this happens.
-* A listener is set to check wheather the internet connection is lost. This listener stays active when navigating to another activity, because the main acitivity is not closed when navigating. When connection is lost, the app returns to MainActivity when not already there, and then disables the buttons to prevent from going to screens that require internet to load data.
+* A listener is set to check wheather the internet connection is lost. This listener stays active when navigating to another activity, because the main acitivity is not closed when navigating. When connection is lost, the app returns to MainActivity when not already there, and then disables the buttons to prevent from going to screens that require internet to load data. This listener activates the finish() method of the foreground activities using the WifiCheckInterface interface.
  
 
 ### User Activity
@@ -77,6 +77,40 @@ In this activity, the whole playing of the game happens. There are different sta
 
 Related classes and notable features:
 
+* A whole bunch of animations have been created to provide the user with an intuitive, responsive layout.
+* An instance of CameraManager has been created. The CameraManager manages the camera and saves the image on the right location in the device's storage. It also provides the filePath and URI.
+* An instance of MSVisionManager is created to provide the checking and tagging functionality of the taken picture.
+* An instance of UserServerManager is created to retrieve the information needed to display the correct times and layouts in the playactivity.
+* An instance of ServerManager is created to retrieve the information about the current thing to find and endTime of the current game.
+
+
 ### Social Activity
 
+Description:
+
+In this activity, one can see the current SnapStreak, the last played game's score time and the amount of games played. Also, there is a little info button with information about the meaning of a SnapStreak. Moreover, one can share the last results with friends via an intent to various different social media.
+
+
+Related classes and notable features:
+
+* An instance of SocialServerManager is created to retrieve the information like SnapStreak, amount of games played and last game's score time.
+* Buttens are animated when clicked.
+
+
 ### Settings Activity
+
+Description:
+
+In this activity, one can see information about the creator of the app for now. This activity is ready for future development.
+
+
+
+
+Next to the activities, there are some things one should know about the **server**:
+
+A server is written, to release new objects every 30-120 minutes. When this happens, the server script changes the index of the current word users have to find, and changes the endtime to 25 minutes from now. Immediately after this, every user of the app is notified..
+The idea is that this can be run on any small server that is attached to the internet, such as a Raspberry Pi.
+This is what the server script looks like while executed:
+
+![server preview](server url)
+
