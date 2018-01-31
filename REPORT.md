@@ -138,4 +138,5 @@ Challenges:
 
 ## Trade-offs
 
-Looking back to this project, I think there are a few things that could be improved, but I think this is a very good starting point of an app that could potentially become a funny game. The biggest decision was to use a server to update the database and notify all users when new items are available. This decision was made fairly late in the design process, but I think it is the base of a much stronger game concept. 
+Looking back to this project, I think there are a few things that could be improved, but I think this is a very good starting point of an app that could potentially become a funny game. The biggest decision was to use a server to update the database and notify all users when new items are available. This decision was made fairly late in the design process, but I think it is the base of a much stronger game concept. In an ideal world with more time, I would definately upgrade the server, so that he would also produce ranking lists and make the option available to see who of your friends is the best, and reward people who keep their SnapStreak low etc.
+Also, the UI and UX can be improved a lot. Although I think the current interface is pretty user friendly, there are some conventions I think can be implemented to make it better.
