@@ -27,8 +27,8 @@ public class UserServerManager implements ValueEventListener{
 
     public UserServerManager(PlayActivity parent, DatabaseReference mDatabase)
     {
-        this.mDatabase = mDatabase;
         this.parent = parent;
+        this.mDatabase = mDatabase;
         mDatabase.addListenerForSingleValueEvent(this);
     }
 
@@ -36,9 +36,9 @@ public class UserServerManager implements ValueEventListener{
     public void onDataChange(DataSnapshot dataSnapshot) {
         DataSnapshot subData = dataSnapshot.child("users").child(mAuth.getUid()).child("gameData");
 
+        Long openingTime = subData.child("openingTime").getValue(Long.class);
         Integer gamesAmount = dataSnapshot.child("users").child(mAuth.getUid()).child("gamesAmount").getValue(Integer.class);
         Long scoreTime = subData.child("scoreTime").getValue(Long.class);
-        Long openingTime = subData.child("openingTime").getValue(Long.class);
         Long userEndMillis = subData.child("lastOpenedGameEndTime").getValue(Long.class);
         Long endMillis = dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class);
         ArrayList<Long> lastGamesList = dataSnapshot.child("users").child(mAuth.getUid()).getValue(UserData.class).lastGames;
