@@ -79,7 +79,7 @@ Alle functionaliteiten voor de Social Activity geschreven. De gebruiker krijgt n
 
 ### Vrijdag 26-01-18
 
-De timers kloppen niet helemaal. Deels gefixt. De scoretijd was de belangrijkste, deze wordt nu correct opgeslagen.
+De timers kloppen niet helemaal. Probleem gefixt. De scoretijd was de belangrijkste, deze wordt nu correct opgeslagen.
 
 ### Zaterdag 27-01-18
 
