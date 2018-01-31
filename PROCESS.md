@@ -70,3 +70,34 @@ PlayActivity verbeterd. Nu zijn er allerlei animaties toegevoegd die de UX verbe
 PlayActivity verder afgemaakt. Opent camera, showt de snap, en beoordeelt of de foto voldoet aan de opdracht.
 
 ### Woensdag 24-01-18
+
+Gewerkt aan de layout in Firebase synchroniseren, zodat als een user de app opent op een ander apparaat met hetzelfde account, dezelfde layout state te zien is.
+
+### Donderdag 25-01-18
+
+Alle functionaliteiten voor de Social Activity geschreven. De gebruiker krijgt nu een gemiddelde Snaptijd van de laatste 10 spellen te zien, en deze kan hij delen met verschillende sociale media.
+
+### Vrijdag 26-01-18
+
+De timers kloppen niet helemaal. Deels gefixt. De scoretijd was de belangrijkste, deze wordt nu correct opgeslagen.
+
+### Zaterdag 27-01-18
+
+Alle layout states correct werkend gekregen, als gebruikers de app openen krijgt hij nu altijd de juiste layout te zien. Ook was er een probleem dat de playactivity pas bij de tweede keer aanklikken de juiste layout weergaf. Dat is nu ook verholpen.
+
+### Zondag 28-01-18
+
+De dataflow verbeterd door wat classes te introduceren, en andere ongebruikte classes te verwijderen. Service gemaakt die op de achtergrond blijft controleren of het
+
+### Maandag 29-01-18
+
+Code in node.js geschreven die elke zoveel tijd een notificatie uitzendt naar alle gebruikers en de data in database aanpast op het juiste moment, zodat een nieuw object beschikbaar komt en ook een nieuwe eindtijd bekend wordt.
+Dit was flink lastig, maar uiteindelijk werkt het.
+
+### Dinsdag 30-01-18
+
+Alle code is nu af. Nog de share-text aangepast en in de SettingsActivity staat nu informatie over de maker van de app.
+
+### Woensdag 31-01-18
+
+Alle comments afgeschreven. Begin gemaakt aan alle documenten die nodig zijn voor de deadline.
