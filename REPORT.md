@@ -1,7 +1,10 @@
-### Description
+# Report
+
+## Description
 
 SnapThat is a game in what players have to find objects in real life and photograph (snap) them.
 Every 30-120 minutes, a new object becomes available in a present in the play-screen.
+This is regulated by a server script that is written in node.js and runs on my own computer but will run on a raspberry pi in the futur, so that the game can be played whenever you want.
 Moreover, the user will receive a notification when this happens.
 This present can be opened for a limited time, 25 minutes.
 When the user opens the present, the user sees what object needs to be found.
@@ -16,7 +19,64 @@ When a user loses internet connection, the app will redirect the user to the mai
 
 
 The mainactivity:
-![mainactivity](urlplaatje)
 
-### Technical design
+![mainactivity](https://github.com/Segouta/Pictured/blob/master/doc/main_screenshot.jpeg)
 
+## Technical design
+
+The app consists out of **6** activities:
+
+### Login Activity
+
+Description:
+
+Here, the user can log in with a Google account. Firebase supports this login, so the functions are pretty straight forward. Also, a check is performed to see if the user has already logged in some time, and if not, the user is created in Firebase database to store game data etc.
+
+
+Related classes and notable features:
+
+* When a user logs in for the first time, a piece of Firebase database is reserved for the information of this user. This information is put there using an instance of UserData, a class containing e-mail, username, subscriptionDate, amount of games played, a list with the last 10 scores, and an instance of GameData. GameData contains a few more items: the layout state, the timestamp of when the last opened present will expire (to check if the user is playing the game that is currently running), the last score time, the time when the last thing was found, and the time when the last present was opened.
+
+
+### Main Activity
+
+Description:
+
+In this activity, players can navigate to the different screens of the app. There are animations on each button, and the user button has a special feature: it contains the profile picture of the current user logged in. Also, the first name is displayed below that picture.
+
+
+Related classes and notable features:
+
+* UserActivity is called when the authorization has become invalid. It calls the signOut() and goToLoginActivity() from the Useractivity when this happens.
+* A listener is set to check wheather the internet connection is lost. This listener stays active when navigating to another activity, because the main acitivity is not closed when navigating. When connection is lost, the app returns to MainActivity when not already there, and then disables the buttons to prevent from going to screens that require internet to load data.
+ 
+
+### User Activity
+
+Description:
+
+Here, the user can simply log out. In this activity, the users profile picture will be displayed, along with the user's first name from its Google account.
+
+
+Related classes and notable features:
+
+* The logout button too has an animation.
+* When you log out, all affinity to other activities (activity history) will be cleared, so that one cannot navigate back into logged in pages.
+
+
+### Play Activity
+
+Description:
+
+In this activity, the whole playing of the game happens. There are different states that the layout can be in, when this screen is opened the correct state will be loaded from firebase and set. These are the most important states:
+* When a present has arrived but not yet opened, it displays a present with some animations and a timer how long the user can still open the present and participate in the game. 
+* When the user enters the PlayActivity and the endtime of the game has been reached and no new game has been started by the server, just a message will show up.
+* When the user has opened the present however, the name of the object and the remaining time will be revealed and the user will be able to click a camera button, that brings the user with an intent to the devices camera-app. When returning, the token image will be analyzed using Microsoft Azure. Points are rewarded if the correct thing was found in the image.
+* When the user has failed, the camera button will stay there. This state is called "attempted".
+
+
+Related classes and notable features:
+
+### Social Activity
+
+### Settings Activity
