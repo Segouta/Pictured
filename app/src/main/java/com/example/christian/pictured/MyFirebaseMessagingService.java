@@ -1,5 +1,10 @@
 package com.example.christian.pictured;
 
+/*
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This class handles the events when a notification from Firebase is received.
+ */
+
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -19,14 +24,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        // There are two types of messages data messages and notification messages. Data messages are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
-        // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        //
+        // When a new message has arrived, this method is fired.
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
@@ -43,10 +41,14 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     }
     void showNotification(String title, String content) {
-
+        // When in the app when a new notification drops, this separate notification will be showed.
+        // Sound for notification.
         Uri notificationSound = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.notification);
 
+        // Vibration pattern.
         long[] array = {3000};
+
+        // Build notification.
         NotificationManager mNotificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
@@ -67,6 +69,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         mBuilder.setContentIntent(pi);
 
+        // Show notification.
         mNotificationManager.notify(0, mBuilder.build());
     }
 }

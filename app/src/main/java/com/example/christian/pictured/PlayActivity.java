@@ -1,5 +1,10 @@
 package com.example.christian.pictured;
 
+/*
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This is SnapThat's PlayActivity. It contains all game elements and handles basically the whole game.
+ */
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,13 +37,16 @@ import static android.view.Gravity.TOP;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener, WifiCheckInterface {
 
+    // Create global constants and interfaces.
     public static MainActivity delegate = null;
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int MAX_HISTORY_LENGTH = 10;
 
+    // Firebase setup.
     private DatabaseReference mDatabase, userDatabase;
     private FirebaseAuth mAuth;
 
+    // Create views.
     private TextView thingText, snapTime;
     private ImageView snapImage, back, stripes, badge, light, openCameraButton;
     private RelativeLayout boxLayout, box;
@@ -46,13 +54,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private ProgressDialog progressDialog;
     private CountdownView acceptTimer, playTimer;
 
+    // Create animations.
     private Animation fade_in, click_exit, grow, slow_show, fly_in, rotate_right, fade, rotate_camera, snap_show, badge_rotation, box_movement;
 
+    // Create classes.
     private CameraManager myCameraManager;
     private MSVisionManager myMSVisionManager;
     private UserServerManager myUserServerManager;
     private ServerManager myServerManager;
 
+    // Create variables.
     private String description, thing, layout;
     private Long openingTime, pausedTime, scoreTime;
     private ArrayList<Long> lastGames;
@@ -64,37 +75,48 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        // Internet connection triggers closing of all activities except MainActivity.
         MainActivity.delegate = this;
 
+        // Set transition style.
         getWindow().setEnterTransition(new Slide(TOP));
+
+        // Setup all animations and views.
         initAnimations();
         initViews();
 
+        // Ask for permissions.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, 1);
             }
         }
 
+        // Setup message arrays from xml resources.
         messagesArray = this.getResources().getStringArray(R.array.wait_messages);
         messagesArrayPositive = this.getResources().getStringArray(R.array.wait_messages_found);
 
+        // Setup database references and authentication.
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
         userDatabase = mDatabase.child("users").child(mAuth.getUid());
 
+        // Setup classes and run the code in them.
         myCameraManager = new CameraManager(this);
         myServerManager = new ServerManager(this, mDatabase);
         myUserServerManager = new UserServerManager(this, mDatabase);
         myMSVisionManager = new MSVisionManager(this, myCameraManager);
 
+        // Set OnClickListeners.
         back.setOnClickListener(this);
         openCameraButton.setOnClickListener(this);
         box.setOnClickListener(this);
         snapImage.setOnClickListener(this);
 
+        // Retrieve last image from storage to show in certain layout versions of this activity.
         setLastImageThumbnail();
 
+        // Set CountdownListener for acceptTimer.
         acceptTimer.setOnCountdownEndListener(new CountdownView.OnCountdownEndListener() {
             @Override
             public void onEnd(CountdownView cv) {
@@ -105,10 +127,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void closeActivity() {
+        // When the internet connection is lost, finish this activity.
         finish();
     }
 
     private void initViews() {
+        // Initialize all views.
         box = findViewById(R.id.boxTimerLayout);
         boxLayout = findViewById(R.id.boxLayout);
         light = findViewById(R.id.light);
@@ -127,6 +151,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initAnimations() {
+        // Initialize all animations.
         click_exit = AnimationUtils.loadAnimation(this, R.anim.click_box_exit);
         fade_in = AnimationUtils.loadAnimation(this, R.anim.fade_in);
         grow = AnimationUtils.loadAnimation(this, R.anim.cloud_grow);
@@ -141,6 +166,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void setVisibilities(boolean cam, boolean thing, boolean box, boolean white, boolean playCounter, boolean image) {
+        // This method sets the visibilities for various views.
         cameraButtonLayout.setVisibility((cam ? View.VISIBLE : View.INVISIBLE));
         thingText.setVisibility((thing ? View.VISIBLE : View.INVISIBLE));
         boxLayout.setVisibility((box ? View.VISIBLE : View.INVISIBLE));
@@ -154,18 +180,26 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void setTimeState(Long openingTimeFromDB, Long scoreTimeFromDB, Integer gamesAmountFromDB, ArrayList<Long> lastGamesList) {
+        // This method is called from server class. Sets all times from the Firebase.
         lastGames = lastGamesList;
         gamesAmount = gamesAmountFromDB;
         scoreTime = scoreTimeFromDB;
         openingTime = openingTimeFromDB;
         if (scoreTime > 0){
-            // dus hij is wel geopend iig
+            // This means the present was already opened.
             playTimer.stop();
             playTimer.updateShow(scoreTime);
         }
     }
 
     public void setLayout(String layoutState) {
+        /*
+         * This method sets the correct layout stored in Firebase to prevent users from switching device and
+         * for example submitting a picture again. This method contains all sorts of setTexts, setColors,
+         * setAnimations and setVisibilities.
+         */
+
+        // Store layout state to use in different methods.
         layout = layoutState;
         thingText.setTextColor(getResources().getColor(R.color.neutral));
         switch(layoutState) {
@@ -224,22 +258,30 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void storeLayout(String toStore) {
+        // Store the new layout in the Firebase database.
         userDatabase.child("gameData").child("layout").setValue(toStore);
     }
 
     private void openBox() {
+        // Open the box, show animations to make it visual attractive.
+        // Set and store current layout.
         storeLayout("opened");
         setLayout("opened");
+
+        // Save openingTime in Firebase.
         openingTime = new Date().getTime();
         userDatabase.child("gameData").child("openingTime").setValue(openingTime);
 
+        // Hide box in a fancy way with animations.
         makeBoxInvisible();
 
+        // Get the thing, and set the text.
         thingText.setText(thing);
         showThingText();
     }
 
     public void setThing(String thingFromFirebase, Long endMillis) {
+        // Sets the thing retrieved from Firebase, and starts the timers.
         thing = thingFromFirebase;
         thingText.setText(thing);
         playTimer.start(endMillis - new Date().getTime());
@@ -247,11 +289,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void showThingText() {
+        // Fancy way to show the new thing to find.
         thingText.setVisibility(View.VISIBLE);
         thingText.setAnimation(slow_show);
     }
 
     private void makeBoxInvisible() {
+        // Hides the box in a fancy way, and removes onclicklistener.
         box.setOnClickListener(null);
         light.setAnimation(grow);
         light.setVisibility(View.INVISIBLE);
@@ -260,6 +304,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void openingTimeExpired() {
+        // When the openingtime expires, change layout accordingly to current state of layout.
         if(layout.equals("unopened")){
             makeBoxInvisible();
         }
@@ -276,6 +321,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     protected void onResume() {
+        // This code makes the nav bar and status bar disappear.
         super.onResume();
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -285,61 +331,85 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 | View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         setLastImageThumbnail();
+
+        // Also, make sure the camerabutton still rotates when resuming the activity.
         openCameraButton.setAnimation(rotate_camera);
     }
 
     private void setLastImageThumbnail() {
+        // Get last image from storage and set a thumbnail version of it.
         snapImage.setImageBitmap(getResizedBitmap(myCameraManager.getThumbnail(), 250));
     }
 
     public void visionCheckDone(String desc, ArrayList<String> tags) {
+        // When the async task of the visioncheck is done, this code will run and set variables and animations.
         description = desc;
         progressDialog.dismiss();
         snapImage.setVisibility(View.VISIBLE);
         snapImage.setAnimation(snap_show);
+
+        // Check if the thing is found, if the tags contain the thing the user looks for.
         compareVisionAndObject(tags);
     }
 
     public void compareVisionAndObject(ArrayList<String> tags) {
+        // This method compares the results from vision with the currently asked thing.
+        // If it is in the list, the thing is found.
         if (tags.contains(thing)) {
+            // Save scoreTime (current time - opening box time).
             scoreTime = new Date().getTime() - openingTime;
+
+            // Add the scoreTime to the recent games list.
             addToLastGames(scoreTime);
 
+            // Save all game info to Firebase.
             userDatabase.child("gamesAmount").setValue(gamesAmount + 1);
             userDatabase.child("gameData").child("thingFoundTime").setValue(new Date().getTime());
             userDatabase.child("gameData").child("scoreTime").setValue(scoreTime);
             mDatabase.child("currentScores").child(scoreTime.toString()).setValue(mAuth.getUid());
+
+            // Store and save new layout.
             storeLayout("found");
             setLayout("found");
+
+            // Toast user that the object was found.
             toaster("Yeah, that is: \"" + thing + "\"");
 
         } else {
+            // When the object is not found, store and set layout state.
             storeLayout("attempted");
             setLayout("attempted");
-            toaster("We did not find a " + thing + " in this image... Try again!");
+
+            // Toast user that the object was not found in this image.
+            toaster("We did not find \"" + thing + "\" in this image... Try again!");
         }
     }
 
     private void addToLastGames(long scoreTime) {
-
+        // Adds the scoreTime to the list of last 10 games in Firebase of this user.
+        // When only one 0 was in the list (default), replace it with new score.
         if (lastGames.size() == 1 && lastGames.get(0) == 0) {
             lastGames.set(0, scoreTime);
         }
+        // If the list is longer than 10 elements, add new thing and remove last, so update list.
         else if (lastGames.size() > MAX_HISTORY_LENGTH - 1) {
             lastGames.add(scoreTime);
             lastGames = new ArrayList<Long>(lastGames.subList(lastGames.size() - MAX_HISTORY_LENGTH, lastGames.size()));
-        } else {
+        }
+        // If the list is not too long and neither empty, just add the new score.
+        else {
             lastGames.add(scoreTime);
         }
         userDatabase.child("lastGames").setValue(lastGames);
     }
 
     public void toaster(String message) {
-        // toasts string
+        // Simple method that simplifies toasting actions.
         Toast.makeText(PlayActivity.this, message, Toast.LENGTH_LONG).show();
     }
 
     private void dispatchTakePictureIntent() {
+        // Starts camera app, with no possibility to store image in gallery.
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, myCameraManager.getImageFileURI());
@@ -349,23 +419,29 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // When returning from the camera, this method is called.
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE) {
-
+            // Pause the timer and get time when pause started.
             playTimer.pause();
             pausedTime = new Date().getTime();
 
+            // Show waiting dialog.
             progressDialog = new ProgressDialog(PlayActivity.this);
             progressDialog.setMessage("Analyzing your snap...");
             progressDialog.show();
+
+            // Start the vision check.
             myMSVisionManager.startVisionCheck();
 
+            // Set new thumbnail.
             setLastImageThumbnail();
         }
     }
 
     @Override
     public void onClick(View v) {
+        // When an object is clicked, this method is called. It starts the correct activity or intent.
         if(v.equals(box)) {
             openBox();
         }
@@ -378,14 +454,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             this.onBackPressed();
         }
         else if (v.equals(snapImage)) {
+            // When clicking the thumbnail, the description will be shown if it's analyzed before.
             if (description != null) {
                 toaster("Our best guess: " + description + ".");
             }
-            addToLastGames(10000);
         }
     }
 
     public Bitmap getResizedBitmap(Bitmap image, int maxSize) {
+        // Returns a resized bitmap.
         int width = image.getWidth();
         int height = image.getHeight();
 

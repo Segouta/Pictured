@@ -1,7 +1,9 @@
 package com.example.christian.pictured;
 
 /*
- * Created by Christian on 30-1-2018.
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * Gamedata contains times and layout that are necessary to show correct view to user,
+ * even when logging in on a different device.
  */
 
 public class GameData {

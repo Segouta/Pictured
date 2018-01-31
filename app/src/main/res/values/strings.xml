@@ -77,4 +77,8 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string name="key1">364da92137ce4d0d99397ae2b2c5a29b</string>
+    <string name="key2">fa76fa5671624f87b26cc8e3f61148a7</string>
+    <string name="endpoint">https://westcentralus.api.cognitive.microsoft.com/vision/v1.0</string>
+
 </resources>

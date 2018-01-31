@@ -16,19 +16,12 @@ class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
         this.imageView = imageView;
     }
 
-    /*
-        doInBackground(Params... params)
-            Override this method to perform a computation on a background thread.
-     */
     protected Bitmap doInBackground(String...urls){
+        // Download code runs in background
         String urlOfImage = urls[0];
         Bitmap logo = null;
         try{
             InputStream is = new URL(urlOfImage).openStream();
-                /*
-                    decodeStream(InputStream is)
-                        Decode an input stream into a bitmap.
-                 */
             logo = BitmapFactory.decodeStream(is);
         }catch(Exception e){ // Catch the download exception
             e.printStackTrace();
@@ -36,11 +29,8 @@ class DownLoadImageTask extends AsyncTask<String,Void,Bitmap> {
         return logo;
     }
 
-    /*
-        onPostExecute(Result result)
-            Runs on the UI thread after doInBackground(Params...).
-     */
     protected void onPostExecute(Bitmap result){
+        // When downloading done, set user profile picture.
         imageView.setImageBitmap(result);
     }
 }

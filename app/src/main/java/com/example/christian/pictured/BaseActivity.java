@@ -1,7 +1,8 @@
 package com.example.christian.pictured;
 
 /*
- * Created by Christian on 14-1-2018.
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This activity shows a progress dialog when logging in with Google.
  */
 
 import android.app.ProgressDialog;
@@ -14,16 +15,19 @@ public class BaseActivity extends AppCompatActivity {
     public ProgressDialog mProgressDialog;
 
     public void showProgressDialog() {
+        // Create and setup new progress dialog if it does not exist already.
         if (mProgressDialog == null) {
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setMessage(getString(R.string.loading));
             mProgressDialog.setIndeterminate(true);
         }
 
+        // Show the dialog.
         mProgressDialog.show();
     }
 
     public void hideProgressDialog() {
+        // Dismiss the dialog. But only if it exists and it is showing currently.
         if (mProgressDialog != null && mProgressDialog.isShowing()) {
             mProgressDialog.dismiss();
         }
@@ -31,6 +35,7 @@ public class BaseActivity extends AppCompatActivity {
 
     @Override
     public void onStop() {
+        // When the app is left, hide the progress dialog.
         super.onStop();
         hideProgressDialog();
     }
