@@ -1,5 +1,9 @@
 # Report
 
+By Christian Bijvoets in the context of the Minor Programmeren at the UvA, january 2018.
+
+[![BCH compliance](https://bettercodehub.com/edge/badge/Segouta/Pictured?branch=master)](https://bettercodehub.com/)
+
 ## Description
 
 SnapThat is a game in what players have to find objects in real life and photograph (snap) them.
