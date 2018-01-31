@@ -2,7 +2,7 @@ package com.example.christian.pictured;
 
 /*
  * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
- * This is a class that retrieves information needed to display things correctly in the playactivity.
+ * This is a class that retrieves information needed to display things (layout and times) correctly in the playactivity.
  */
 
 import android.util.Log;

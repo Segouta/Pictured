@@ -59,13 +59,16 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
         gamesAmountView = findViewById(R.id.gameAmountText);
         lastGameView = findViewById(R.id.lastGameScore);
 
-        // TODO: hier verder
+        // Setup transition style.
         getWindow().setEnterTransition(new Slide(BOTTOM));
 
+        // Setup Firebase.
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        // Setup socialservermanager to get data from Firebase.
         SocialServerManager mySocialServerManager = new SocialServerManager(this, mDatabase);
 
+        // Set OnClickListeners.
         back.setOnClickListener(this);
         info.setOnClickListener(this);
         share.setOnClickListener(this);
@@ -77,8 +80,8 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
         finish();
     }
 
-    // onResume callback, used to make the nav bar and status bar disappear
     protected void onResume() {
+        // This code makes the nav bar and status bar disappear.
         super.onResume();
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE
@@ -108,7 +111,7 @@ public class SocialActivity extends FragmentActivity implements View.OnClickList
     }
 
     private void shareSnaps() {
-        // Share your snapstreak with the world via various social media.
+        // Share your SnapStreak with the world via various social media.
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "Hey, btw my current SnapStreak is " + streakToDisplay +

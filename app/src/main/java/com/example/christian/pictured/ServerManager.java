@@ -34,7 +34,8 @@ public class ServerManager implements ValueEventListener{
         Integer index = dataSnapshot.child("currentThing").child("index").getValue(Integer.class);
 
         // When received, call setThing function in PlayActivity.
-        parent.setThing(dataSnapshot.child("things").child(index.toString()).getValue(String.class), dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class));
+        parent.setThing(dataSnapshot.child("things").child(index.toString()).getValue(String.class),
+                dataSnapshot.child("currentThing").child("endMillis").getValue(Long.class));
     }
 
     @Override

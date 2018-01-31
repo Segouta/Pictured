@@ -32,9 +32,11 @@ public class LoginActivity extends BaseActivity implements View.OnClickListener 
     private static final String TAG = "GoogleActivity";
     private static final int RC_SIGN_IN = 9001;
 
+    // Setup Firebase.
     private FirebaseAuth mAuth;
     private DatabaseReference mDatabase;
 
+    // Setup Google functionality.
     private GoogleSignInClient mGoogleSignInClient;
 
     @Override
