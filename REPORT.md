@@ -114,3 +114,28 @@ This is what the server script looks like while executed:
 
 ![server preview](https://github.com/Segouta/Pictured/blob/master/doc/serverpreview.PNG)
 
+
+## Changes and development changes
+
+Changes:
+
+A lot has changed since the first week of this project. A lot of functionalities have changed, but moreover, the nature of the game has changed. The former idea was that people would play this game in groups. There would be one group manager who create the game and assign objects to be found by the group. Now, every user of the app has to find the same item, and a server will update the to be found item and the endtime every so much time.
+Features that have been changed:
+* Replaced Google Vision by [Microsoft Azure computer vision](https://azure.microsoft.com/nl-nl/services/cognitive-services/computer-vision/), because Google wanted my payment details. Microsoft Azure is not as good as Google Vision, but good enough for the current needs of the app.
+* The words are not generated from the Random Word API, instead I created a large list of words in the database. This way the words can be managed better (not showing words twice within 100 games for example.
+* Points are only calculated based on time, not on distance travelled. This might be a feature for future development though.
+* The database structure has changed quite a bit, because there are no groups or friends.
+* Players can not scroll through recent snaps they made, because the decision was made to limit the storage use of this app to the bare minimum.
+
+
+Challenges:
+
+* Since Android 8, background services are [no longer a thing](https://blog.klinkerapps.com/android-o-background-services/) one can easily use in apps. I created a background service that listened for changes in the thing-child in firebase, and would send the user a notification automatically, but when testing on different devices, only for Android versions lower than 8, it worked. Since my own phone had Android 8, I wanted to make this work. This is where the decision was made that Firebase Cloud Messaging had to be implemented. But for that, a server script had to be created. This was quite a challenge, because that script had to be written in node.js, something unknown to me.
+* Saving PlayActivity's Layout and all the timers and states was quite challenging too. I implemented a state variable in Firebase, and based on this, the correct layout is displayed.
+* Preventing the user from getting to activities where an internet connection is required was another challenge. It required me to create an Interface that lets the MainActivity close other activities from the background if internet connection loss happens.
+* All the animations and smooth transitions were the last challenge. Since we had not learned anything about them, using them was an interesting decision.
+
+
+## Trade-offs
+
+Looking back to this project, I think there are a few things that could be improved, but I think this is a very good starting point of an app that could potentially become a funny game. The biggest decision was to use a server to update the database and notify all users when new items are available. This decision was made fairly late in the design process, but I think it is the base of a much stronger game concept. 
