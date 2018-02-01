@@ -24,8 +24,8 @@ This project is owned by Christian B. Next to the concept and design, all SnapTh
 
 ## External code
 For this project a few external libraries are used, to be known:
-iwgang's [CountdownView](https://github.com/iwgang/CountdownView), for displaying all the timers in a nice way.
-hdodenhof's [CircleImageView](https://github.com/hdodenhof/CircleImageView), for displaying the user images in a round shape.
+* iwgang's [CountdownView](https://github.com/iwgang/CountdownView), for displaying all the timers in a nice way.
+* hdodenhof's [CircleImageView](https://github.com/hdodenhof/CircleImageView), for displaying the user images in a round shape.
 All credits to the corresponding owners.
 
 
