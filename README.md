@@ -1,6 +1,6 @@
 # SnapThat
 
-![logo](https://github.com/Segouta/Pictured/blob/master/doc/main.png)
+![logo](https://github.com/Segouta/Pictured/blob/master/doc/SnapThat.png)
 
 ## The game
 SnapThat is a game in what players have to find objects in real life and photograph (snap) them.
@@ -32,7 +32,7 @@ Please, remember that lot's of animations are implemented in this project. Scree
 Login screen and choosing account:
 
 ![login screen](https://github.com/Segouta/Pictured/blob/master/doc/login_screen.jpeg)
-![choosing account](https://github.com/Segouta/Pictured/blob/master/doc/choos.jpeg)
+![choosing account](https://github.com/Segouta/Pictured/blob/master/doc/choosing.jpeg)
 
 Menu, and menu when the internet connection is lost:
 
