@@ -19,7 +19,7 @@ SnapThat was created by Christian B in context of the end project of the Minor P
 
 
 ## Copyright statement
-This project is owned by Christian B. Next to the concept and design, all SnapThat logo's and styles are also property of the owner.
+This project is owned by Christian B. Next to the concept and design, all SnapThat logo's and styles are also property of the owner. Check out the [LICENCE](https://github.com/Segouta/Pictured/blob/master/LICENSE) for more information.
 
 
 ## External code
