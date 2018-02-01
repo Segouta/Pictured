@@ -10,6 +10,9 @@ If the analysis was positive, you will see what your score was, and you succesfu
 On the social page, you can check your experience, your last score, and your SnapStreak (the average score of the last 10 games).
 Keeping your SnapStreak low is difficult. You can share your SnapStreak over various social media to compare with friends and show them who's boss.
 
+**Demonstration video**
+[Click here to view the demo video](DIT MOET NOG)
+
 
 ## About
 SnapThat was created by Christian B in context of the end project of the Minor Programming at the Uva, january 2018.
