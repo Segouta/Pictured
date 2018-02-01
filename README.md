@@ -67,3 +67,7 @@ Checking the stats in the social screen:
 Settings screen contains just credits:
 
 ![settings](https://github.com/Segouta/Pictured/blob/master/doc/settings.jpeg)
+
+Just to show some of the animations:
+
+![gif](https://github.com/Segouta/Pictured/blob/master/doc/screen_gif.gif)
