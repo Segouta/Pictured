@@ -1,5 +1,10 @@
 package com.example.christian.pictured;
 
+/*
+ * By Christian Bijvoets, Minor Programmeren UvA, January 2018.
+ * This is SnapThat's login activity. Users can login using their Google account.
+ */
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
