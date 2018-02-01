@@ -24,6 +24,8 @@ This project is owned by Christian B. Next to the concept and design, all SnapTh
 
 ## External code
 For this project a few external libraries are used, to be known:
+* Google's [Firebase](https://firebase.google.com/), for all the database functionalities.
+* Microsoft's [Azure vision (projectoxford)](https://azure.microsoft.com/nl-nl/services/cognitive-services/computer-vision/), for the image tagging service.
 * iwgang's [CountdownView](https://github.com/iwgang/CountdownView), for displaying all the timers in a nice way.
 * hdodenhof's [CircleImageView](https://github.com/hdodenhof/CircleImageView), for displaying the user images in a round shape.
 All credits to the corresponding owners.
