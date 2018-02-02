@@ -14,6 +14,8 @@ Keeping your SnapStreak low is difficult. You can share your SnapStreak over var
 
 [Click here to view the demo video](https://youtu.be/1bChKT1dR0E)
 
+(Note: the black box showed in the video during the Google login procedure is just for email adress protection, it is not part of the app.)
+
 
 ## About
 SnapThat was created by Christian B in context of the end project of the Minor Programming at the Uva, january 2018.
