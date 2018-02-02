@@ -11,6 +11,7 @@ On the social page, you can check your experience, your last score, and your Sna
 Keeping your SnapStreak low is difficult. You can share your SnapStreak over various social media to compare with friends and show them who's boss.
 
 **Demonstration video**
+
 [Click here to view the demo video](https://youtu.be/1bChKT1dR0E)
 
 
